@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="Recipes.View.IngredientsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Recipes.View" 
+             xmlns:viewmodel="clr-namespace:Recipes.ViewModel" 
+             d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" >
+
+    <Grid Margin="10" DataContext="{Binding IngredientsVM}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Inputfält och knappar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10" >
+            <TextBox Width="200" Margin="0,0,10,0" 
+                     Text="{Binding NewIngredientName, Mode=TwoWay}" />
+            <Button Content="Add ingredient" Command="{Binding AddIngredientCommand}" Margin="0,0,10,0"/>
+            <Button Content="Edit ingredient" Command="{Binding UpdateIngredientCommand}" Margin="0,0,10,0"/>
+            <Button Content="Delete ingredient" Command="{Binding DeleteIngredientCommand}"/>
+        </StackPanel>
+
+        <!-- Lista över ingredienser -->
+        <ListView x:Name="IngredientsListView" Grid.Row="1" Background="#C2D4CB" 
+                  ItemsSource="{Binding Ingredients}" 
+                  SelectedItem="{Binding SelectedIngredient, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Ingredient}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>

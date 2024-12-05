@@ -1,0 +1,250 @@
+﻿<UserControl x:Class="Recipes.View.DetailedRecipeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Recipes.View" 
+             xmlns:viewmodel="clr-namespace:Recipes.ViewModel" 
+             d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <viewmodel:MainWindowViewModel />
+    </UserControl.DataContext>
+    
+    <Grid VerticalAlignment="Stretch" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button 
+                Grid.Column="0" 
+                Content="View all recipes" 
+                Command="{Binding ShowRecipeViewCommand}" 
+                Background="#C2D4CB" 
+                BorderBrush="#653E35"
+                Foreground="#653E35" 
+                Width="100" 
+                Height="30"/>
+
+            <Button 
+                Grid.Column="2"
+                Content="Delete recipe" 
+                Command="{Binding DetailedVM.DeleteRecipeCommand}"
+                Background="#C2D4CB"
+                BorderBrush="#653E35"
+                Foreground="#653E35"
+                Width="100" 
+                Height="30"/>
+        </Grid>
+        
+        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20" Height="100">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox 
+                    Text="{Binding DetailedVM.Recipe.Recipe}" 
+                    FontSize="34" 
+                    FontWeight="Bold" 
+                    TextWrapping="Wrap"
+                    Width="500"
+                    Margin="0,0,10,0"
+                    Foreground="#653E35" 
+                    Background="#C2D4CB" 
+                    BorderThickness="0" 
+                    HorizontalContentAlignment="Center" 
+                    VerticalContentAlignment="Center"/>
+                <Button 
+                    Grid.Column="1" 
+                    Content="★" 
+                    ToolTip="Select if recipe is favorite." 
+                    Background="#C2D4CB" 
+                    Foreground="#653E35" 
+                    BorderThickness="0" 
+                    FontSize="34" 
+                    VerticalContentAlignment="Center"/>
+                <!-- Yellow star if favorite -->
+            </Grid>
+
+            <Grid Grid.Row="1" Width="500">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <ListView 
+                    x:Name="IngredientsListView" 
+                    Grid.Row="0" 
+                    Height="150"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding DetailedVM.Recipe.RecipeIngredients}"
+                    Background="#C2D4CB"
+                    BorderBrush="#653E35"
+                    Foreground="#653E35"
+                    FontSize="14">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#653E35" BorderThickness="0,0,0,1" Padding="5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Ingredient.Ingredient}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Quantity}" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Unit.Unit}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <StackPanel 
+                    Grid.Row="1" 
+                    Orientation="Horizontal" 
+                    Margin="0,10" 
+                    HorizontalAlignment="Center">
+
+                    <ComboBox 
+                        Background="#C2D4CB"
+                        BorderBrush="#653E35"
+                        Foreground="#653E35"
+                        Width="210"
+                        Margin="0,0,5,0"
+                        Text="{Binding DetailedVM.NewIngredientName, Mode=TwoWay}"
+                        IsEditable="True"
+                        ItemsSource="{Binding DetailedVM.FilteredIngredients}"
+                        DisplayMemberPath="Ingredient">
+                    </ComboBox>
+
+                    <TextBox 
+                        Background="#C2D4CB"
+                        BorderBrush="#653E35"
+                        Foreground="#653E35"
+                        Width="75"
+                        Margin="0,0,5,0"
+                        Text="{Binding DetailedVM.NewIngredientQuantity, Mode=TwoWay}" />
+
+                    <ComboBox 
+                        Background="#C2D4CB"
+                        BorderBrush="#653E35"
+                        Foreground="#653E35"
+                        Width="75"
+                        Margin="0,0,5,0"
+                        ItemsSource="{Binding DetailedVM.Units}" 
+                        SelectedIndex="7"
+                        SelectedItem="{Binding DetailedVM.NewIngredientUnit, Mode=TwoWay}" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Unit}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Button 
+                        Content="Add" 
+                        Command="{Binding DetailedVM.AddRecipeIngredientCommand}"
+                        Background="#C2D4CB"
+                        BorderBrush="#653E35"
+                        Foreground="#653E35"
+                        Width="75" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="2" Width="500">
+                <TextBox 
+                    Text="{Binding DetailedVM.Recipe.CookingInstructions}" 
+                    Background="#C2D4CB"
+                    BorderBrush="#653E35"
+                    Foreground="#653E35"
+                    TextWrapping="Wrap" 
+                    AcceptsReturn="True" 
+                    VerticalScrollBarVisibility="Visible"
+                    HorizontalScrollBarVisibility="Disabled"
+                    FontSize="14" 
+                    Height="150"/>
+            </Grid>
+
+            <Grid Grid.Row="4" Margin="0,10" Width="500">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,10">
+                    <ComboBox
+                        IsEditable="False" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        Width="200"
+                        SelectedIndex="0"
+                        ItemsSource="{Binding DetailedVM.CookingTimes}"
+                        BorderBrush="#653E35"
+                        Foreground="#653E35"
+                        DisplayMemberPath="CookingTime"/>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid Grid.Row="1" Margin="0,5,0,5">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding DetailedVM.RecipeTags}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox 
+                                            Content="{Binding Tag}" 
+                                            IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                                            Background="#C2D4CB"
+                                            BorderBrush="#653E35"
+                                            Foreground="#653E35"
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+        
+        <Grid Grid.Row="3" Margin="10" HorizontalAlignment="Center">
+            <Button 
+                Content="Save recipe"
+                Command="{Binding DetailedVM.SaveRecipeCommand}"
+                Background="#C2D4CB"
+                BorderBrush="#653E35"
+                Foreground="#653E35"
+                Width="200" 
+                Height="60"/>
+        </Grid>
+    </Grid>
+</UserControl>
