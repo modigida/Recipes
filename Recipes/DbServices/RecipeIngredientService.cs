@@ -20,6 +20,10 @@ public class RecipeIngredientService
             .ToListAsync();
     }
 
+    public async Task<bool> IsIngredientUsedAsync(int ingredientId)
+    {
+        return await _context.RecipeIngredients.AnyAsync(ri => ri.IngredientId == ingredientId);
+    }
     public async Task AddRecipeIngredientAsync(RecipeIngredients recipeIngredient)
     {
         _context.RecipeIngredients.Add(recipeIngredient);

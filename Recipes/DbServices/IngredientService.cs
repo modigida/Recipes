@@ -28,6 +28,11 @@ public class IngredientService
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> IngredientExistsAsync(string ingredientName)
+    {
+        return await _context.Ingredients
+            .AnyAsync(i => i.Ingredient.ToLower() == ingredientName.ToLower());
+    }
     public async Task UpdateIngredientAsync(Ingredients ingredient)
     {
         _context.Ingredients.Update(ingredient);

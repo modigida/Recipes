@@ -9,6 +9,7 @@ namespace Recipes.ViewModel;
 public class IngredientsViewModel : BaseViewModel
 {
     private readonly IngredientService _ingredientService;
+    private readonly RecipeIngredientService _recipeIngredientService;
 
     private ObservableCollection<Ingredients> _ingredients;
     public ObservableCollection<Ingredients> Ingredients
@@ -51,17 +52,19 @@ public class IngredientsViewModel : BaseViewModel
     public ICommand UpdateIngredientCommand { get; }
     public ICommand DeleteIngredientCommand { get; }
 
-    public IngredientsViewModel(IngredientService ingredientService)
+    public IngredientsViewModel(IngredientService ingredientService, RecipeIngredientService recipeIngredientService)
     {
         Ingredients = new ObservableCollection<Ingredients>();
 
         _ingredientService = ingredientService;
+        _recipeIngredientService = recipeIngredientService;
 
         AddIngredientCommand = new RelayCommand(async _ => await AddIngredient());
         UpdateIngredientCommand = new RelayCommand(async _ => await UpdateIngredient());
         DeleteIngredientCommand = new RelayCommand(async _ => await DeleteIngredient());
 
         _ = LoadIngredientsAsync();
+        _recipeIngredientService = recipeIngredientService;
     }
 
     private async Task LoadIngredientsAsync()
@@ -79,6 +82,13 @@ public class IngredientsViewModel : BaseViewModel
         if (string.IsNullOrWhiteSpace(NewIngredientName))
         {
             MessageBox.Show("Enter ingredient name.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (await _ingredientService.IngredientExistsAsync(NewIngredientName))
+        {
+            MessageBox.Show($"The ingredient '{NewIngredientName}' already exists.",
+                            "Duplicate Ingredient", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -102,12 +112,10 @@ public class IngredientsViewModel : BaseViewModel
             return;
         }
 
-        // Uppdatera ingrediensens namn
         SelectedIngredient.Ingredient = NewIngredientName;
         await _ingredientService.UpdateIngredientAsync(SelectedIngredient);
         await LoadIngredientsAsync();
 
-        // Rensa NewIngredientName efter uppdatering
         NewIngredientName = string.Empty;
     }
 
@@ -119,8 +127,15 @@ public class IngredientsViewModel : BaseViewModel
             return;
         }
 
-        var result = MessageBox.Show($"Sure to delete '{SelectedIngredient.Ingredient}'?",
-                                     "Confirm delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (await _recipeIngredientService.IsIngredientUsedAsync(SelectedIngredient.Id))
+        {
+            MessageBox.Show($"Ingredient '{SelectedIngredient.Ingredient}' is used in one or more recipes and cannot be deleted.",
+                            "Cannot Delete", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var result = MessageBox.Show($"Are you sure you want to delete '{SelectedIngredient.Ingredient}'?",
+                                     "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
         if (result == MessageBoxResult.Yes)
         {

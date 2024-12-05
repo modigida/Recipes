@@ -37,7 +37,7 @@ public class MainWindowViewModel : BaseViewModel
     {
         RecipeVM = new(new Services.RecipeService(new Database.AppDbContext()));
         DetailedVM = new(new Services.GetStaticListDataService(new Database.AppDbContext()), new Services.IngredientService(new Database.AppDbContext()));
-        IngredientsVM = new(new Services.IngredientService(new Database.AppDbContext()));
+        IngredientsVM = new(new Services.IngredientService(new Database.AppDbContext()), new Services.RecipeIngredientService(new Database.AppDbContext()));
 
         IsRecipeViewVisible = true;
         IsDetailedViewVisible = false;
