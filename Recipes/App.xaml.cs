@@ -28,7 +28,7 @@ public partial class App : Application
 
         var mainWindow = new MainWindow();
 
-        mainWindow.DataContext = new RecipeViewModel(new RecipeService(new AppDbContext()));
+        mainWindow.DataContext = new RecipeViewModel(new RecipeService(new AppDbContext()), new MainWindowViewModel());
         // mainWindow.Show();
 
     }

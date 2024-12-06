@@ -14,6 +14,8 @@ public class DetailedRecipeViewModel : BaseViewModel
     private readonly TagService _tagService;
     private readonly RecipeService _recipeService;
     private readonly RecipeIngredientService _recipeIngredientService;
+    private readonly RecipeViewModel _recipeViewModel;
+    private readonly MainWindowViewModel _mainWindowViewModel;
 
     public ObservableCollection<Ingredients> AllIngredients { get; set; }
     public ObservableCollection<Ingredients> FilteredIngredients { get; set; }
@@ -72,13 +74,16 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ICommand DeleteRecipeCommand { get; }
     public DetailedRecipeViewModel(GetStaticListDataService staticDataService, 
         IngredientService ingredientService, TagService tagsService, RecipeService recipeService, 
-        RecipeIngredientService recipeIngredientService)
+        RecipeIngredientService recipeIngredientService, RecipeViewModel recipeViewModel,
+        MainWindowViewModel mainWindowViewModel)
     {
         _staticDataService = staticDataService;
         _ingredientService = ingredientService;
         _tagService = tagsService;
         _recipeService = recipeService;
         _recipeIngredientService = recipeIngredientService;
+        _recipeViewModel = recipeViewModel;
+        _mainWindowViewModel = mainWindowViewModel;
 
         AllIngredients = new ObservableCollection<Ingredients>();
         FilteredIngredients = new ObservableCollection<Ingredients>();
@@ -159,34 +164,35 @@ public class DetailedRecipeViewModel : BaseViewModel
             }
         }
     }
-    private async void LoadData()
+    public async void LoadData(Model.Recipes recipe = null)
     {
         Units = new ObservableCollection<Units>(_staticDataService.GetUnits());
         CookingTimes = new ObservableCollection<CookingTimes>(_staticDataService.GetCookingTimes());
         RecipeTags = new ObservableCollection<RecipeTags>(_staticDataService.GetRecipeTags());
 
-        if (Recipe?.Id > 0) // Endast om receptet redan finns
+        if (recipe != null)
+        {
+            Recipe = recipe;
+        }
+
+        if (Recipe?.Id > 0)
         {
             var tagsForRecipe = await _tagService.GetTagsForRecipeAsync(Recipe.Id);
 
-            // Förutsätter att alla taggar redan finns i den statiska listan
             foreach (var tag in RecipeTags)
             {
-                tag.IsSelected = tagsForRecipe.Any(t => t.Id == tag.Id); // Sätt IsSelected baserat på kopplingen
-            }
+                tag.IsSelected = tagsForRecipe.Any(t => t.Id == tag.Id);
 
-            // Trigga om det behövs
-            OnPropertyChanged(nameof(RecipeTags));
+                OnPropertyChanged(nameof(RecipeTags));
+            }
         }
         else
         {
-            // Om det inte finns ett recept, sätt alla tags till IsSelected = false som standard
             foreach (var tag in RecipeTags)
             {
                 tag.IsSelected = false;
             }
 
-            // Trigga om det behövs
             OnPropertyChanged(nameof(RecipeTags));
         }
     }
@@ -205,7 +211,6 @@ public class DetailedRecipeViewModel : BaseViewModel
             Unit = NewIngredientUnit
         };
 
-        // Lägg till den nya ingrediensen i båda kollektionerna
         Recipe.RecipeIngredients.Add(newIngredient);
 
         if (!NewRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
@@ -213,8 +218,6 @@ public class DetailedRecipeViewModel : BaseViewModel
             NewRecipeIngredients.Add(newIngredient);
         }
 
-
-        // Återställ fälten
         NewIngredientName = string.Empty;
         NewIngredientQuantity = string.Empty;
         NewIngredientUnit = null;
@@ -256,7 +259,6 @@ public class DetailedRecipeViewModel : BaseViewModel
             await _recipeIngredientService.AddRecipeIngredientAsync(Recipe.Id, recipeIngredient.Ingredient.Id, recipeIngredient.Quantity, recipeIngredient.Unit.Id);
         }
 
-        // Rensa nya ingredienser efter sparning
         NewRecipeIngredients.Clear();
 
         MessageBox.Show("Recipe saved successfully.", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -270,6 +272,8 @@ public class DetailedRecipeViewModel : BaseViewModel
         {
             await _recipeService.DeleteRecipeAsync(Recipe.Id);
             MessageBox.Show("Recipe deleted successfully.", "Delete", MessageBoxButton.OK, MessageBoxImage.Information);
+            _recipeViewModel.LoadRecipes();
+            _mainWindowViewModel.ShowRecipeViewCommand?.Execute(null);
         }
     }
     

@@ -23,6 +23,18 @@ public class MainWindowViewModel : BaseViewModel
         {
             _isDetailedViewVisible = value;
             OnPropertyChanged();
+
+            if (_isDetailedViewVisible)
+            {
+                if (RecipeVM.SelectedRecipe != null)
+                {
+                    DetailedVM.LoadData(RecipeVM.SelectedRecipe);
+                }
+                else
+                {
+                    DetailedVM.LoadData();
+                }
+            }
         }
     }
 
@@ -35,10 +47,12 @@ public class MainWindowViewModel : BaseViewModel
 
     public MainWindowViewModel()
     {
-        RecipeVM = new(new Services.RecipeService(new Database.AppDbContext()));
+        RecipeVM = new(new Services.RecipeService(new Database.AppDbContext()), this);
         DetailedVM = new(new Services.GetStaticListDataService(new Database.AppDbContext()), 
             new Services.IngredientService(new Database.AppDbContext()), new Services.TagService(new Database.AppDbContext()), 
-            new Services.RecipeService(new Database.AppDbContext()), new Services.RecipeIngredientService(new Database.AppDbContext()));
+            new Services.RecipeService(new Database.AppDbContext()), 
+            new Services.RecipeIngredientService(new Database.AppDbContext()),
+            new RecipeViewModel(new Services.RecipeService(new Database.AppDbContext()), this), this);
         IngredientsVM = new(new Services.IngredientService(new Database.AppDbContext()), new Services.RecipeIngredientService(new Database.AppDbContext()));
 
         IsRecipeViewVisible = true;
@@ -50,13 +64,13 @@ public class MainWindowViewModel : BaseViewModel
 
     private void ShowRecipeView(object obj)
     {
-        //IsDetailedViewVisible = false;
-        //IsRecipeViewVisible = true;
+        IsDetailedViewVisible = false;
+        IsRecipeViewVisible = true;
     }
 
     private void OpenDetailedView(object obj)
     {
-        //IsRecipeViewVisible = false;
-        //IsDetailedViewVisible = true;
+        IsRecipeViewVisible = false;
+        IsDetailedViewVisible = true;
     }
 }

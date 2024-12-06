@@ -1,11 +1,30 @@
-﻿using Recipes.Services;
+﻿using Recipes.Model;
+using Recipes.Services;
+using Recipes.View;
 using System.Collections.ObjectModel;
 
 namespace Recipes.ViewModel;
 public class RecipeViewModel : BaseViewModel
 {
     private readonly RecipeService _recipeService;
+    private readonly MainWindowViewModel _mainWindowViewModel;
 
+
+    private Model.Recipes _selectedRecipe;
+    public Model.Recipes SelectedRecipe
+    {
+        get => _selectedRecipe;
+        set
+        {
+            _selectedRecipe = value;
+            OnPropertyChanged();
+
+            if (_selectedRecipe != null)
+            {
+                _mainWindowViewModel.OpenDetailedViewCommand?.Execute(null);
+            }
+        }
+    }
 
     private ObservableCollection<Model.Recipes> _recipes;
     public ObservableCollection<Model.Recipes> Recipes
@@ -18,16 +37,17 @@ public class RecipeViewModel : BaseViewModel
         }
     }
     
-    public RecipeViewModel(RecipeService recipeService)
+    public RecipeViewModel(RecipeService recipeService, MainWindowViewModel mainWindowViewModel)
     {
         _recipeService = recipeService;
+        _mainWindowViewModel = mainWindowViewModel;
 
         Recipes = new ObservableCollection<Model.Recipes>();
 
         LoadRecipes();
     }
 
-    private async void LoadRecipes()
+    public async void LoadRecipes()
     {
         Recipes.Clear();
 
@@ -35,7 +55,9 @@ public class RecipeViewModel : BaseViewModel
         foreach (var recipe in recipes)
         {
             Recipes.Add(recipe);
+            OnPropertyChanged(nameof(Recipes));
         }
     }
-    
+
+
 }

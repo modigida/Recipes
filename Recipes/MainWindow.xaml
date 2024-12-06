@@ -34,34 +34,42 @@
             </Grid>
 
             <Grid Grid.Column="1" Background="#C2D4CB" Margin="10">
-                <!-- 
-                <view:RecipeView>
-                    <view:RecipeView.Style>
-                        <Style TargetType="view:RecipeView">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsRecipeViewVisible}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </view:RecipeView.Style>
-                </view:RecipeView>
+               
+                
+                
+                
+                <!-- <view:RecipeView/> 
+                
+                <view:RecipeView DataContext="{Binding}">
+    <view:RecipeView.Style>
+        <Style TargetType="view:RecipeView">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsRecipeViewVisible}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </view:RecipeView.Style>
+</view:RecipeView>
 
-                <view:DetailedRecipeView>
-                    <view:DetailedRecipeView.Style>
-                        <Style TargetType="view:DetailedRecipeView">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsDetailedViewVisible}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </view:DetailedRecipeView.Style>
-                </view:DetailedRecipeView>
--->
-                <view:RecipeView/>
+<view:DetailedRecipeView DataContext="{Binding}">
+    <view:DetailedRecipeView.Style>
+        <Style TargetType="view:DetailedRecipeView">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsDetailedViewVisible}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </view:DetailedRecipeView.Style>
+</view:DetailedRecipeView>
+                
+
+                -->
+                <view:RecipeView DataContext="{Binding}" Visibility="{Binding IsRecipeViewVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <view:DetailedRecipeView DataContext="{Binding}" Visibility="{Binding IsDetailedViewVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             </Grid>
 
