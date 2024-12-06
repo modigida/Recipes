@@ -22,10 +22,11 @@ public class IngredientService
         return await _context.Ingredients.FindAsync(id);
     }
 
-    public async Task AddIngredientAsync(Ingredients ingredient)
+    public async Task<int> AddIngredientAsync(Ingredients ingredient)
     {
         _context.Ingredients.Add(ingredient);
         await _context.SaveChangesAsync();
+        return ingredient.Id;
     }
 
     public async Task<bool> IngredientExistsAsync(string ingredientName)

@@ -27,7 +27,10 @@
                 Padding="10,5" 
                 Margin="10"/>
 
-        <ListView x:Name="RecipesListView" Grid.Row="1" Background="#C2D4CB">
+        <ListView x:Name="RecipesListView" Grid.Row="1" Background="#C2D4CB"
+                  DataContext="{Binding RecipeVM}"
+                  ItemsSource="{Binding Recipes}"
+                  SelectedItem="{Binding SelectedRecipe}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Recipe}" />

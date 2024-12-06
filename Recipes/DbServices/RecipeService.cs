@@ -35,15 +35,22 @@ public class RecipeService
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task AddRecipeAsync(Model.Recipes recipe)
+    public async Task<int> AddRecipeAsync(Model.Recipes recipe)
     {
         _context.Recipes.Add(recipe);
         await _context.SaveChangesAsync();
+        return recipe.Id;
     }
 
     public async Task UpdateRecipeAsync(Model.Recipes recipe)
     {
-        _context.Recipes.Update(recipe);
+        _context.Recipes.Attach(recipe);
+
+        _context.Entry(recipe).Property(r => r.Recipe).IsModified = true;
+        _context.Entry(recipe).Property(r => r.CookingInstructions).IsModified = true;
+        _context.Entry(recipe).Property(r => r.IsFavorite).IsModified = true;
+        _context.Entry(recipe).Property(r => r.CookingTimeId).IsModified = true;
+
         await _context.SaveChangesAsync();
     }
 

@@ -29,14 +29,16 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand OpenDetailedViewCommand { get; }
     public ICommand ShowRecipeViewCommand { get; }
 
-    public RecipeViewModel RecipeVM { get; } 
-    public DetailedRecipeViewModel DetailedVM { get; } 
+    public RecipeViewModel RecipeVM { get; }
+    public DetailedRecipeViewModel DetailedVM { get; }
     public IngredientsViewModel IngredientsVM { get; }
 
     public MainWindowViewModel()
     {
         RecipeVM = new(new Services.RecipeService(new Database.AppDbContext()));
-        DetailedVM = new(new Services.GetStaticListDataService(new Database.AppDbContext()), new Services.IngredientService(new Database.AppDbContext()));
+        DetailedVM = new(new Services.GetStaticListDataService(new Database.AppDbContext()), 
+            new Services.IngredientService(new Database.AppDbContext()), new Services.TagService(new Database.AppDbContext()), 
+            new Services.RecipeService(new Database.AppDbContext()), new Services.RecipeIngredientService(new Database.AppDbContext()));
         IngredientsVM = new(new Services.IngredientService(new Database.AppDbContext()), new Services.RecipeIngredientService(new Database.AppDbContext()));
 
         IsRecipeViewVisible = true;
