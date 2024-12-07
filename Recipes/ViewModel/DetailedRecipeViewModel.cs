@@ -263,6 +263,8 @@ public class DetailedRecipeViewModel : BaseViewModel
         NewRecipeIngredients.Clear();
 
         MessageBox.Show("Recipe saved successfully.", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
     }
     private async void DeleteRecipe(object obj)
     {

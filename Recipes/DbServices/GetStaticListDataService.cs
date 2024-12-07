@@ -5,7 +5,6 @@ namespace Recipes.Services;
 public class GetStaticListDataService
 {
     private readonly AppDbContext _context;
-
     public GetStaticListDataService(AppDbContext context)
     {
         _context = context;

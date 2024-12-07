@@ -22,14 +22,10 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        //var mainWindow = Services.GetRequiredService<MainWindow>();
-        //mainWindow.Show();
         base.OnStartup(e);
 
         var mainWindow = new MainWindow();
 
-        mainWindow.DataContext = new RecipeViewModel(new RecipeService(new AppDbContext()), new MainWindowViewModel());
-        // mainWindow.Show();
-
+        mainWindow.DataContext = new MainWindowViewModel(); 
     }
 }

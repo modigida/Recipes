@@ -1,6 +1,4 @@
-﻿using Recipes.Database;
-using Recipes.Services;
-using Recipes.ViewModel;
+﻿using Recipes.ViewModel;
 using System.Windows;
 
 namespace Recipes;

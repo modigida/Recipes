@@ -19,13 +19,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="0" 
-                Content="Add New Recipe" 
-                Command="{Binding OpenDetailedViewCommand}"
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Top" 
-                Padding="10,5" 
-                Margin="10"/>
+        <StackPanel Grid.Row="0" 
+             Orientation="Horizontal" 
+             HorizontalAlignment="Left"
+             Margin="10">
+            <Button Content="Add New Recipe" 
+            Command="{Binding OpenDetailedViewCommand}" 
+            Padding="10,5" 
+            Margin="0,0,10,0" />
+            <Button Content="View Ingredients" 
+            Command="{Binding OpenIngredientsViewCommand}" 
+            Padding="10,5" />
+        </StackPanel>
 
         <ListView x:Name="RecipesListView" Grid.Row="1" Background="#C2D4CB"
                   DataContext="{Binding RecipeVM}"

@@ -1,6 +1,4 @@
-﻿using Recipes.Model;
-using Recipes.Services;
-using Recipes.View;
+﻿using Recipes.Services;
 using System.Collections.ObjectModel;
 
 namespace Recipes.ViewModel;
@@ -8,7 +6,6 @@ public class RecipeViewModel : BaseViewModel
 {
     private readonly RecipeService _recipeService;
     private readonly MainWindowViewModel _mainWindowViewModel;
-
 
     private Model.Recipes _selectedRecipe;
     public Model.Recipes SelectedRecipe
@@ -36,7 +33,6 @@ public class RecipeViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
-    
     public RecipeViewModel(RecipeService recipeService, MainWindowViewModel mainWindowViewModel)
     {
         _recipeService = recipeService;
@@ -46,7 +42,6 @@ public class RecipeViewModel : BaseViewModel
 
         LoadRecipes();
     }
-
     public async void LoadRecipes()
     {
         Recipes.Clear();
@@ -58,6 +53,4 @@ public class RecipeViewModel : BaseViewModel
             OnPropertyChanged(nameof(Recipes));
         }
     }
-
-
 }

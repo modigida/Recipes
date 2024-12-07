@@ -37,9 +37,20 @@ public class MainWindowViewModel : BaseViewModel
             }
         }
     }
+    private bool _isIngredientViewVisible;
+    public bool IsIngredientViewVisible
+    {
+        get => _isIngredientViewVisible;
+        set
+        {
+            _isIngredientViewVisible = value;
+            OnPropertyChanged();
+        }
+    }
 
     public ICommand OpenDetailedViewCommand { get; }
     public ICommand ShowRecipeViewCommand { get; }
+    public ICommand OpenIngredientsViewCommand { get; }
 
     public RecipeViewModel RecipeVM { get; }
     public DetailedRecipeViewModel DetailedVM { get; }
@@ -57,27 +68,37 @@ public class MainWindowViewModel : BaseViewModel
 
         IsRecipeViewVisible = true;
         IsDetailedViewVisible = false;
+        IsIngredientViewVisible = false;
 
         OpenDetailedViewCommand = new RelayCommand(OpenDetailedView);
         ShowRecipeViewCommand = new RelayCommand(ShowRecipeView);
+        OpenIngredientsViewCommand = new RelayCommand(OpenIngredientsView);
     }
-
-    private void ShowRecipeView(object obj)
+    public void ShowRecipeView(object obj)
     {
+        RecipeVM.LoadRecipes();
         IsDetailedViewVisible = false;
+        IsIngredientViewVisible = false;
         IsRecipeViewVisible = true;
     }
-
-    private void OpenDetailedView(object obj)
+    public void OpenDetailedView(object obj)
     {
         RecipeVM.SelectedRecipe = null;
         DetailedVM.LoadData();
         IsRecipeViewVisible = false;
+        IsIngredientViewVisible = false;
         IsDetailedViewVisible = true;
+    }
+    private void OpenIngredientsView(object obj)
+    {
+        IsRecipeViewVisible = false;
+        IsDetailedViewVisible = false;
+        IsIngredientViewVisible = true; 
     }
     public void OpenDetailedRecipe()
     {
         IsRecipeViewVisible = false;
+        IsIngredientViewVisible = false;
         IsDetailedViewVisible = true;
     }
 }

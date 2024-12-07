@@ -6,7 +6,6 @@ namespace Recipes.Services;
 public class RecipeIngredientService
 {
     private readonly AppDbContext _context;
-
     public RecipeIngredientService(AppDbContext context)
     {
         _context = context;
@@ -19,7 +18,6 @@ public class RecipeIngredientService
             .Where(ri => ri.RecipeId == recipeId)
             .ToListAsync();
     }
-
     public async Task<bool> IsIngredientUsedAsync(int ingredientId)
     {
         return await _context.RecipeIngredients.AnyAsync(ri => ri.IngredientId == ingredientId);
@@ -37,7 +35,6 @@ public class RecipeIngredientService
         _context.RecipeIngredients.Add(recipeIngredient);
         await _context.SaveChangesAsync();
     }
-
     public async Task RemoveRecipeIngredientAsync(int recipeId, int ingredientId)
     {
         var recipeIngredient = await _context.RecipeIngredients

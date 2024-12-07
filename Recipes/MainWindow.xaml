@@ -70,6 +70,7 @@
                 -->
                 <view:RecipeView DataContext="{Binding}" Visibility="{Binding IsRecipeViewVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <view:DetailedRecipeView DataContext="{Binding}" Visibility="{Binding IsDetailedViewVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <view:IngredientsView DataContext="{Binding}" Visibility="{Binding IsIngredientViewVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             </Grid>
 

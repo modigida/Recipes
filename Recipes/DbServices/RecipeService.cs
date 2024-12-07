@@ -5,12 +5,10 @@ namespace Recipes.Services;
 public class RecipeService
 {
     private readonly AppDbContext _context;
-
     public RecipeService(AppDbContext context)
     {
         _context = context;
     }
-
     public async Task<List<Model.Recipes>> GetAllRecipesAsync()
     {
         return await _context.Recipes
@@ -22,7 +20,6 @@ public class RecipeService
                 .ThenInclude(ri => ri.Unit)
             .ToListAsync();
     }
-
     public async Task<Model.Recipes?> GetRecipeByIdAsync(int id)
     {
         return await _context.Recipes
@@ -34,14 +31,12 @@ public class RecipeService
                 .ThenInclude(ri => ri.Unit)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
-
     public async Task<int> AddRecipeAsync(Model.Recipes recipe)
     {
         _context.Recipes.Add(recipe);
         await _context.SaveChangesAsync();
         return recipe.Id;
     }
-
     public async Task UpdateRecipeAsync(Model.Recipes recipe)
     {
         _context.Recipes.Attach(recipe);
@@ -53,7 +48,6 @@ public class RecipeService
 
         await _context.SaveChangesAsync();
     }
-
     public async Task DeleteRecipeAsync(int id)
     {
         var recipe = await _context.Recipes.FindAsync(id);
