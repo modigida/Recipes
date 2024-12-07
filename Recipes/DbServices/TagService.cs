@@ -12,7 +12,7 @@ public class TagService
         _context = context;
     }
 
-    public async Task<List<RecipeTags>> GetTagsForRecipeAsync(int recipeId)
+    public async Task<List<int>> GetTagsForRecipeAsync(int recipeId)
     {
         // Hämta alla taggar
         var allTags = await _context.RecipeTags.ToListAsync();
@@ -24,12 +24,12 @@ public class TagService
             .ToListAsync();
 
         // Markera taggar som valda genom att jämföra ID
-        foreach (var tag in allTags)
-        {
-            tag.Tag += selectedTagIds.Contains(tag.Id) ? " (Selected)" : ""; // Exempel för visualisering
-        }
+        //foreach (var tag in allTags)
+        //{
+        //    tag.Tag += selectedTagIds.Contains(tag.Id) ? " (Selected)" : ""; // Exempel för visualisering
+        //}
 
-        return allTags;
+        return selectedTagIds;
     }
 
     public async Task SaveSelectedTagsAsync(int recipeId, List<int> selectedTagIds)

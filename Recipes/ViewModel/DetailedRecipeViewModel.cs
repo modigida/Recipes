@@ -29,11 +29,11 @@ public class DetailedRecipeViewModel : BaseViewModel
     public Model.Recipes Recipe
     {
         get => _recipe;
-        set 
+        set
         {
-            _recipe = value; 
+            _recipe = value;
             OnPropertyChanged();
-        } 
+        }
     }
 
     private string _newIngredientName = "Enter ingredient";
@@ -72,8 +72,8 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ICommand AddRecipeIngredientCommand { get; }
     public ICommand SaveRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }
-    public DetailedRecipeViewModel(GetStaticListDataService staticDataService, 
-        IngredientService ingredientService, TagService tagsService, RecipeService recipeService, 
+    public DetailedRecipeViewModel(GetStaticListDataService staticDataService,
+        IngredientService ingredientService, TagService tagsService, RecipeService recipeService,
         RecipeIngredientService recipeIngredientService, RecipeViewModel recipeViewModel,
         MainWindowViewModel mainWindowViewModel)
     {
@@ -94,18 +94,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         LoadData();
 
-        if (Recipe == null)
-        {
-            Recipe = new Model.Recipes
-            {
-                Recipe = "New Recipe",
-                CookingInstructions = string.Empty,
-                CookingTimeId = CookingTimes.FirstOrDefault()?.Id ?? 0,
-                RecipeIngredients = new List<RecipeIngredients>()
-           
-             
-            };
-        }
+
 
         AddRecipeIngredientCommand = new RelayCommand(AddRecipeIngredient);
         SaveRecipeCommand = new RelayCommand(SaveRecipe);
@@ -128,7 +117,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         var availableIngredients = AllIngredients
             .Where(i => !existingIngredients.Contains(i.Ingredient))
-            .OrderBy(i => i.Ingredient) 
+            .OrderBy(i => i.Ingredient)
             .ToList();
 
         FilteredIngredients.Clear();
@@ -174,6 +163,18 @@ public class DetailedRecipeViewModel : BaseViewModel
         {
             Recipe = recipe;
         }
+        else
+        {
+            Recipe = new Model.Recipes
+            {
+                Recipe = "New Recipe",
+                CookingInstructions = string.Empty,
+                CookingTimeId = CookingTimes.FirstOrDefault()?.Id ?? 0,
+                RecipeIngredients = new List<RecipeIngredients>()
+
+
+            };
+        }
 
         if (Recipe?.Id > 0)
         {
@@ -181,10 +182,10 @@ public class DetailedRecipeViewModel : BaseViewModel
 
             foreach (var tag in RecipeTags)
             {
-                tag.IsSelected = tagsForRecipe.Any(t => t.Id == tag.Id);
-
-                OnPropertyChanged(nameof(RecipeTags));
+                tag.IsSelected = tagsForRecipe.Contains(tag.Id);
             }
+
+            OnPropertyChanged(nameof(RecipeTags));
         }
         else
         {
@@ -225,7 +226,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         OnPropertyChanged(nameof(Recipe));
         FilterAvailableIngredients();
     }
-    
+
     private async void SaveRecipe(object obj)
     {
         if (Recipe.Id == 0)
@@ -276,6 +277,6 @@ public class DetailedRecipeViewModel : BaseViewModel
             _mainWindowViewModel.ShowRecipeViewCommand?.Execute(null);
         }
     }
-    
+
 
 }

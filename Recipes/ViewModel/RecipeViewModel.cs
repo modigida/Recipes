@@ -21,7 +21,7 @@ public class RecipeViewModel : BaseViewModel
 
             if (_selectedRecipe != null)
             {
-                _mainWindowViewModel.OpenDetailedViewCommand?.Execute(null);
+                _mainWindowViewModel.OpenDetailedRecipe();
             }
         }
     }

@@ -70,6 +70,13 @@ public class MainWindowViewModel : BaseViewModel
 
     private void OpenDetailedView(object obj)
     {
+        RecipeVM.SelectedRecipe = null;
+        DetailedVM.LoadData();
+        IsRecipeViewVisible = false;
+        IsDetailedViewVisible = true;
+    }
+    public void OpenDetailedRecipe()
+    {
         IsRecipeViewVisible = false;
         IsDetailedViewVisible = true;
     }
