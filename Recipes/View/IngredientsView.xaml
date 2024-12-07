@@ -63,8 +63,7 @@
                 Margin="0,0,10,0"
                 Background="#C2D4CB" 
                 Text="{Binding NewIngredientName, Mode=TwoWay}" />
-            <Button Content="Add ingredient" Command="{Binding AddIngredientCommand}" Margin="0,0,10,0"/>
-            <Button Content="Edit ingredient" Command="{Binding UpdateIngredientCommand}" Margin="0,0,10,0"/>
+            <Button Content="Save ingredient" Command="{Binding SaveIngredientCommand}" Margin="0,0,10,0"/>
             <Button Content="Delete ingredient" Command="{Binding DeleteIngredientCommand}"/>
         </StackPanel>
         

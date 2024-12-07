@@ -21,7 +21,6 @@ public class IngredientsViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
-
     private Ingredients _selectedIngredient;
     public Ingredients SelectedIngredient
     {
@@ -34,7 +33,6 @@ public class IngredientsViewModel : BaseViewModel
             NewIngredientName = _selectedIngredient?.Ingredient ?? string.Empty;
         }
     }
-
     private string _newIngredientName;
     public string NewIngredientName
     {
@@ -47,13 +45,9 @@ public class IngredientsViewModel : BaseViewModel
             }
             _newIngredientName = value;
             OnPropertyChanged();
-
-            
         }
     }
-
-    public ICommand AddIngredientCommand { get; }
-    public ICommand UpdateIngredientCommand { get; }
+    public ICommand SaveIngredientCommand { get; }
     public ICommand DeleteIngredientCommand { get; }
 
     public IngredientsViewModel(IngredientService ingredientService, RecipeIngredientService recipeIngredientService)
@@ -63,14 +57,12 @@ public class IngredientsViewModel : BaseViewModel
         _ingredientService = ingredientService;
         _recipeIngredientService = recipeIngredientService;
 
-        AddIngredientCommand = new RelayCommand(async _ => await AddIngredient());
-        UpdateIngredientCommand = new RelayCommand(async _ => await UpdateIngredient());
+        SaveIngredientCommand = new RelayCommand(async _ => await SaveIngredient());
         DeleteIngredientCommand = new RelayCommand(async _ => await DeleteIngredient());
 
         _ = LoadIngredientsAsync();
         _recipeIngredientService = recipeIngredientService;
     }
-
     private async Task LoadIngredientsAsync()
     {
         Ingredients.Clear();
@@ -80,8 +72,7 @@ public class IngredientsViewModel : BaseViewModel
             Ingredients.Add(ingredient);
         }
     }
-
-    private async Task AddIngredient()
+    private async Task SaveIngredient()
     {
         if (string.IsNullOrWhiteSpace(NewIngredientName))
         {
@@ -89,40 +80,29 @@ public class IngredientsViewModel : BaseViewModel
             return;
         }
 
-        if (await _ingredientService.IngredientExistsAsync(NewIngredientName))
+        if (SelectedIngredient != null) 
         {
-            MessageBox.Show($"The ingredient '{NewIngredientName}' already exists.",
-                            "Duplicate Ingredient", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
+            SelectedIngredient.Ingredient = NewIngredientName;
+            await _ingredientService.UpdateIngredientAsync(SelectedIngredient);
+            MessageBox.Show($"Ingredient '{NewIngredientName}' updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        else 
+        {
+            if (await _ingredientService.IngredientExistsAsync(NewIngredientName))
+            {
+                MessageBox.Show($"The ingredient '{NewIngredientName}' already exists.",
+                                "Duplicate Ingredient", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var newIngredient = new Ingredients { Ingredient = NewIngredientName };
+            await _ingredientService.AddIngredientAsync(newIngredient);
+            MessageBox.Show($"Ingredient '{NewIngredientName}' added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        var newIngredient = new Ingredients { Ingredient = NewIngredientName };
-        await _ingredientService.AddIngredientAsync(newIngredient);
         await LoadIngredientsAsync();
         NewIngredientName = string.Empty;
     }
-
-    private async Task UpdateIngredient()
-    {
-        if (SelectedIngredient == null)
-        {
-            MessageBox.Show("Choose ingredient to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(NewIngredientName))
-        {
-            MessageBox.Show("Enter a new ingredient name.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        SelectedIngredient.Ingredient = NewIngredientName;
-        await _ingredientService.UpdateIngredientAsync(SelectedIngredient);
-        await LoadIngredientsAsync();
-
-        NewIngredientName = string.Empty;
-    }
-
     private async Task DeleteIngredient()
     {
         if (SelectedIngredient == null)
