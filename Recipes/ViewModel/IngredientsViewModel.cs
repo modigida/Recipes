@@ -41,6 +41,10 @@ public class IngredientsViewModel : BaseViewModel
         get => _newIngredientName;
         set
         {
+            if(SelectedIngredient != null)
+            {
+                SelectedIngredient.Ingredient = value;
+            }
             _newIngredientName = value;
             OnPropertyChanged();
 

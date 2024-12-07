@@ -10,7 +10,8 @@
         d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="Recipes Program" MinHeight="800" MinWidth="1250" MaxHeight="800" MaxWidth="1250" 
-        WindowStartupLocation="CenterScreen" >
+        WindowStartupLocation="CenterScreen" 
+        Icon="Resources\recipesIcon.ico">
 
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />

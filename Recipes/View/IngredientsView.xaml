@@ -9,30 +9,64 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" >
 
-    <Grid Margin="10" DataContext="{Binding IngredientsVM}">
+    <Grid Margin="10" >
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Inputfält och knappar -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10" >
-            <TextBox Width="200" Margin="0,0,10,0" 
-                     Text="{Binding NewIngredientName, Mode=TwoWay}" />
+        <Button 
+            Grid.Row="0" 
+            HorizontalAlignment="Left"
+            Content="View all recipes" 
+            Command="{Binding ShowRecipeViewCommand}" 
+            Background="#C2D4CB" 
+            BorderBrush="#653E35"
+            Foreground="#653E35" 
+            Width="100" 
+            Height="30"/>
+
+        <TextBlock
+            Grid.Row="1"
+            Text="Ingredients"
+            HorizontalAlignment="Center"
+            FontSize="34"
+            Foreground="#653E35" 
+            Margin="0,0,0,15"/>
+
+        <ListView 
+            Grid.Row="2" 
+            Background="#C2D4CB" 
+            Foreground="#653E35" 
+            DataContext="{Binding IngredientsVM}"
+            ItemsSource="{Binding Ingredients}" 
+            SelectedItem="{Binding SelectedIngredient, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding Ingredient}" FontSize="14" Margin="0,0,0,3" />
+                        <Border Height="1" BorderBrush="#653E35" BorderThickness="0.1" Margin="0,0,0,3" Width="630"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel 
+            Orientation="Horizontal" 
+            Grid.Row="3" 
+            Margin="0,20" 
+            DataContext="{Binding IngredientsVM}">
+            <TextBox 
+                Width="200" 
+                Margin="0,0,10,0"
+                Background="#C2D4CB" 
+                Text="{Binding NewIngredientName, Mode=TwoWay}" />
             <Button Content="Add ingredient" Command="{Binding AddIngredientCommand}" Margin="0,0,10,0"/>
             <Button Content="Edit ingredient" Command="{Binding UpdateIngredientCommand}" Margin="0,0,10,0"/>
             <Button Content="Delete ingredient" Command="{Binding DeleteIngredientCommand}"/>
         </StackPanel>
-
-        <!-- Lista över ingredienser -->
-        <ListView x:Name="IngredientsListView" Grid.Row="1" Background="#C2D4CB" 
-                  ItemsSource="{Binding Ingredients}" 
-                  SelectedItem="{Binding SelectedIngredient, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Ingredient}" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        
     </Grid>
 </UserControl>
