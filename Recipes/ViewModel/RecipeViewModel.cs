@@ -33,6 +33,22 @@ public class RecipeViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
+
+    public IEnumerable<string> SortOptions { get; } = new List<string> { "Sort by..", "Name", "Favorite", "Cooking Time" };
+
+    private string _selectedSortOption = "Sort by..";
+    public string SelectedSortOption
+    {
+        get => _selectedSortOption;
+        set
+        {
+            _selectedSortOption = value;
+            OnPropertyChanged();
+            SortRecipes();
+        }
+    }
+
+
     public RecipeViewModel(RecipeService recipeService, MainWindowViewModel mainWindowViewModel)
     {
         _recipeService = recipeService;
@@ -57,5 +73,21 @@ public class RecipeViewModel : BaseViewModel
             
         }
         OnPropertyChanged(nameof(Recipes));
+    }
+
+    private void SortRecipes()
+    {
+        if (string.IsNullOrEmpty(SelectedSortOption))
+            return;
+
+        IEnumerable<Model.Recipes> sortedRecipes = SelectedSortOption switch
+        {
+            "Name" => Recipes.OrderBy(r => r.Recipe),
+            "Favorite" => Recipes.OrderByDescending(r => r.IsFavorite),
+            "Cooking Time" => Recipes.OrderBy(r => r.CookingTime?.CookingTime),
+            _ => Recipes
+        };
+
+        Recipes = new ObservableCollection<Model.Recipes>(sortedRecipes);
     }
 }

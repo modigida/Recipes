@@ -16,10 +16,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" 
-             Orientation="Horizontal" 
-             HorizontalAlignment="Stretch" >
-            
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
             <Button 
                 Content="Add New Recipe" 
                 Command="{Binding OpenDetailedViewCommand}" 
@@ -28,8 +31,8 @@
                 Foreground="#653E35" 
                 Width="100" 
                 Height="30" 
-                HorizontalAlignment="Left"/>
-            
+                Grid.Column="0" />
+
             <Button 
                 Content="View Ingredients" 
                 Command="{Binding OpenIngredientsViewCommand}" 
@@ -38,9 +41,9 @@
                 Foreground="#653E35" 
                 Width="100" 
                 Height="30" 
-                HorizontalAlignment="Right"/>
-            
-        </StackPanel>
+                HorizontalAlignment="Right" 
+                Grid.Column="2" />
+        </Grid>
 
         <TextBlock
             Grid.Row="1"
@@ -48,6 +51,20 @@
             HorizontalAlignment="Center"
             FontSize="34"
             Foreground="#653E35" 
+            Margin="0,0,0,15"/>
+        
+        <ComboBox
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Width="150"
+            DataContext="{Binding RecipeVM}"
+            ItemsSource="{Binding SortOptions}"
+            SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}"
+            IsReadOnly="True"
+            Foreground="#653E35"
+            Background="#C2D4CB"
+            BorderBrush="#653E35"
             Margin="0,0,0,15"/>
         
         <ListView 
