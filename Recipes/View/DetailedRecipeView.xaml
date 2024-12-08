@@ -31,21 +31,13 @@
                 Grid.Column="0" 
                 Content="View all recipes" 
                 Command="{Binding ShowRecipeViewCommand}" 
-                Background="#C2D4CB" 
-                BorderBrush="#653E35"
-                Foreground="#653E35" 
-                Width="100" 
-                Height="30"/>
+                Style="{StaticResource CustomButtonStyle}"/>
 
             <Button 
                 Grid.Column="2"
                 Content="Delete recipe" 
                 Command="{Binding DetailedVM.DeleteRecipeCommand}"
-                Background="#C2D4CB"
-                BorderBrush="#653E35"
-                Foreground="#653E35"
-                Width="100" 
-                Height="30"/>
+                Style="{StaticResource CustomButtonStyle}"/>
         </Grid>
         
         <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
@@ -66,15 +58,14 @@
                 <TextBox 
                     Text="{Binding DetailedVM.Recipe.Recipe}" 
                     FontSize="34" 
-                    FontWeight="Bold" 
                     TextWrapping="Wrap"
                     Width="500"
+                    VerticalContentAlignment="Top"
                     Margin="0,0,10,0"
                     Foreground="#653E35" 
                     Background="#C2D4CB" 
                     BorderThickness="0" 
-                    HorizontalContentAlignment="Center" 
-                    VerticalContentAlignment="Center"/>
+                    HorizontalContentAlignment="Center" />
                 <Button 
                     Grid.Column="1" 
                     Content="★" 
@@ -240,9 +231,7 @@
             <Button 
                 Content="Save recipe"
                 Command="{Binding DetailedVM.SaveRecipeCommand}"
-                Background="#C2D4CB"
-                BorderBrush="#653E35"
-                Foreground="#653E35"
+                Style="{StaticResource CustomButtonStyle}"
                 Width="200" 
                 Height="60"/>
         </Grid>

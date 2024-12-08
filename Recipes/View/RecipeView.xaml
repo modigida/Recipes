@@ -26,21 +26,13 @@
             <Button 
                 Content="Add New Recipe" 
                 Command="{Binding OpenDetailedViewCommand}" 
-                Background="#C2D4CB" 
-                BorderBrush="#653E35"
-                Foreground="#653E35" 
-                Width="100" 
-                Height="30" 
+                Style="{StaticResource CustomButtonStyle}" 
                 Grid.Column="0" />
 
             <Button 
                 Content="View Ingredients" 
                 Command="{Binding OpenIngredientsViewCommand}" 
-                Background="#C2D4CB" 
-                BorderBrush="#653E35"
-                Foreground="#653E35" 
-                Width="100" 
-                Height="30" 
+                Style="{StaticResource CustomButtonStyle}"
                 HorizontalAlignment="Right" 
                 Grid.Column="2" />
         </Grid>

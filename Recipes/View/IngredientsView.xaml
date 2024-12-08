@@ -22,11 +22,7 @@
             HorizontalAlignment="Left"
             Content="View all recipes" 
             Command="{Binding ShowRecipeViewCommand}" 
-            Background="#C2D4CB" 
-            BorderBrush="#653E35"
-            Foreground="#653E35" 
-            Width="100" 
-            Height="30"/>
+            Style="{StaticResource CustomButtonStyle}"/>
 
         <TextBlock
             Grid.Row="1"
@@ -89,10 +85,7 @@
             <Button 
                 Content="Save ingredient" 
                 Command="{Binding SaveIngredientCommand}" 
-                Background="#C2D4CB" 
-                BorderBrush="#653E35"
-                Foreground="#653E35" 
-                Padding="10,5"/>
+                Style="{StaticResource CustomButtonStyle}" />
         </StackPanel>
         
     </Grid>
