@@ -35,7 +35,7 @@ namespace Recipes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CookingTimes");
+                    b.ToTable("CookingTimes", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Model.Ingredients", b =>
@@ -52,7 +52,7 @@ namespace Recipes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ingredients");
+                    b.ToTable("Ingredients", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Model.RecipeIngredients", b =>
@@ -76,7 +76,7 @@ namespace Recipes.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("RecipeIngredients");
+                    b.ToTable("RecipeIngredients", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Model.RecipeRecipeTags", b =>
@@ -91,7 +91,7 @@ namespace Recipes.Migrations
 
                     b.HasIndex("RecipeTagId");
 
-                    b.ToTable("RecipeRecipeTags");
+                    b.ToTable("RecipeRecipeTags", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Model.RecipeTags", b =>
@@ -108,7 +108,7 @@ namespace Recipes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RecipeTags");
+                    b.ToTable("RecipeTags", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Model.Recipes", b =>
@@ -135,7 +135,7 @@ namespace Recipes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recipes");
+                    b.ToTable("Recipes", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Model.Units", b =>
@@ -152,7 +152,7 @@ namespace Recipes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Units");
+                    b.ToTable("Units", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Model.RecipeIngredients", b =>

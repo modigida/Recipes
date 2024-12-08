@@ -171,8 +171,6 @@ public class DetailedRecipeViewModel : BaseViewModel
                 CookingInstructions = string.Empty,
                 CookingTimeId = CookingTimes.FirstOrDefault()?.Id ?? 0,
                 RecipeIngredients = new List<RecipeIngredients>()
-
-
             };
         }
 

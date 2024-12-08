@@ -12,24 +12,26 @@ public class RecipeService
     public async Task<List<Model.Recipes>> GetAllRecipesAsync()
     {
         return await _context.Recipes
-            .Include(r => r.RecipeRecipeTags)
-                .ThenInclude(r => r.RecipeTag)
-            .Include(r => r.RecipeIngredients)
-                .ThenInclude(ri => ri.Ingredient)
-            .Include(r => r.RecipeIngredients)
-                .ThenInclude(ri => ri.Unit)
-            .ToListAsync();
+        .Include(r => r.RecipeRecipeTags)
+            .ThenInclude(r => r.RecipeTag)
+        .Include(r => r.RecipeIngredients)
+            .ThenInclude(ri => ri.Ingredient)
+        .Include(r => r.RecipeIngredients)
+            .ThenInclude(ri => ri.Unit)
+        .Include(r => r.CookingTime)
+        .ToListAsync();
     }
     public async Task<Model.Recipes?> GetRecipeByIdAsync(int id)
     {
         return await _context.Recipes
-            .Include(r => r.RecipeRecipeTags)
-                .ThenInclude(r => r.RecipeTag)
-            .Include(r => r.RecipeIngredients)
-                .ThenInclude(ri => ri.Ingredient)
-            .Include(r => r.RecipeIngredients)
-                .ThenInclude(ri => ri.Unit)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        .Include(r => r.RecipeRecipeTags)
+            .ThenInclude(r => r.RecipeTag)
+        .Include(r => r.RecipeIngredients)
+            .ThenInclude(ri => ri.Ingredient)
+        .Include(r => r.RecipeIngredients)
+            .ThenInclude(ri => ri.Unit)
+        .Include(r => r.CookingTime)
+        .FirstOrDefaultAsync(r => r.Id == id);
     }
     public async Task<int> AddRecipeAsync(Model.Recipes recipe)
     {

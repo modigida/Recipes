@@ -60,7 +60,9 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{Binding Recipe}" FontSize="14" Margin="0,0,0,3" />
+                        <TextBlock Text="{Binding Recipe}" FontSize="24" />
+                        <TextBlock Text="{Binding CookingTime.CookingTime}" FontSize="14" />
+                        <TextBlock Text="{Binding RecipeTags}" FontSize="14" Margin="0,0,0,3"/>
                         <Border Height="1" BorderBrush="#653E35" BorderThickness="0.1" Margin="0,0,0,3" Width="630"/>
                     </StackPanel>
                 </DataTemplate>

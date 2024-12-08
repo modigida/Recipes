@@ -47,10 +47,15 @@ public class RecipeViewModel : BaseViewModel
         Recipes.Clear();
 
         var recipes = await _recipeService.GetAllRecipesAsync(); 
+
         foreach (var recipe in recipes)
         {
+            recipe.RecipeTags = string.Join(", ",
+            recipe.RecipeRecipeTags.Select(rrt => rrt.RecipeTag.Tag));
+
             Recipes.Add(recipe);
-            OnPropertyChanged(nameof(Recipes));
+            
         }
+        OnPropertyChanged(nameof(Recipes));
     }
 }

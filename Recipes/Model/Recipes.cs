@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Recipes.Model;
 public class Recipes
@@ -7,10 +8,15 @@ public class Recipes
     public string Recipe { get; set; }
     public string CookingInstructions { get; set; }
     public bool IsFavorite { get; set; }
-
-    [ForeignKey("CookingTimes")]
+    
     public int CookingTimeId { get; set; }
 
-    public ICollection<RecipeRecipeTags> RecipeRecipeTags { get; set; } // Koppling till taggar
+    [ForeignKey("CookingTimeId")]
+    public CookingTimes? CookingTime { get; set; }
+    public ICollection<RecipeRecipeTags> RecipeRecipeTags { get; set; }
     public ICollection<RecipeIngredients> RecipeIngredients { get; set; }
+
+
+    [NotMapped]
+    public string RecipeTags { get; set; }
 }
