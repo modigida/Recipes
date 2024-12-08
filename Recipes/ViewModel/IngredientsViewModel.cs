@@ -58,7 +58,8 @@ public class IngredientsViewModel : BaseViewModel
         _recipeIngredientService = recipeIngredientService;
 
         SaveIngredientCommand = new RelayCommand(async _ => await SaveIngredient());
-        DeleteIngredientCommand = new RelayCommand(async _ => await DeleteIngredient());
+        DeleteIngredientCommand = new RelayCommand<Ingredients>(async ingredient => await DeleteIngredient(ingredient));
+
 
         _ = LoadIngredientsAsync();
         _recipeIngredientService = recipeIngredientService;
@@ -103,27 +104,28 @@ public class IngredientsViewModel : BaseViewModel
         await LoadIngredientsAsync();
         NewIngredientName = string.Empty;
     }
-    private async Task DeleteIngredient()
+
+    private async Task DeleteIngredient(Ingredients ingredient)
     {
-        if (SelectedIngredient == null)
+        if (ingredient == null)
         {
             MessageBox.Show("Choose ingredient to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        if (await _recipeIngredientService.IsIngredientUsedAsync(SelectedIngredient.Id))
+        if (await _recipeIngredientService.IsIngredientUsedAsync(ingredient.Id))
         {
-            MessageBox.Show($"Ingredient '{SelectedIngredient.Ingredient}' is used in one or more recipes and cannot be deleted.",
+            MessageBox.Show($"Ingredient '{ingredient.Ingredient}' is used in one or more recipes and cannot be deleted.",
                             "Cannot Delete", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        var result = MessageBox.Show($"Are you sure you want to delete '{SelectedIngredient.Ingredient}'?",
+        var result = MessageBox.Show($"Are you sure you want to delete '{ingredient.Ingredient}'?",
                                      "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
         if (result == MessageBoxResult.Yes)
         {
-            await _ingredientService.DeleteIngredientAsync(SelectedIngredient.Id);
+            await _ingredientService.DeleteIngredientAsync(ingredient.Id);
             await LoadIngredientsAsync();
         }
     }
