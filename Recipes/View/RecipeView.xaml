@@ -26,13 +26,11 @@
             <Button 
                 Content="Add New Recipe" 
                 Command="{Binding OpenDetailedViewCommand}" 
-                Style="{StaticResource CustomButtonStyle}" 
                 Grid.Column="0" />
 
             <Button 
                 Content="View Ingredients" 
                 Command="{Binding OpenIngredientsViewCommand}" 
-                Style="{StaticResource CustomButtonStyle}"
                 HorizontalAlignment="Right" 
                 Grid.Column="2" />
         </Grid>
@@ -42,7 +40,6 @@
             Text="Recipes"
             HorizontalAlignment="Center"
             FontSize="34"
-            Foreground="#653E35" 
             Margin="0,0,0,15"/>
         
         <ComboBox
@@ -54,8 +51,6 @@
             ItemsSource="{Binding SortOptions}"
             SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}"
             IsReadOnly="True"
-            Foreground="#653E35"
-            Background="#C2D4CB"
             BorderBrush="#653E35"
             Margin="0,0,0,15"/>
         

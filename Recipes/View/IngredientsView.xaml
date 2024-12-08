@@ -21,15 +21,13 @@
             Grid.Row="0" 
             HorizontalAlignment="Left"
             Content="View all recipes" 
-            Command="{Binding ShowRecipeViewCommand}" 
-            Style="{StaticResource CustomButtonStyle}"/>
+            Command="{Binding ShowRecipeViewCommand}" />
 
         <TextBlock
             Grid.Row="1"
             Text="Ingredients"
             HorizontalAlignment="Center"
             FontSize="34"
-            Foreground="#653E35" 
             Margin="0,0,0,15"/>
 
         <ListView 
@@ -84,8 +82,7 @@
                 VerticalContentAlignment="Center"/>
             <Button 
                 Content="Save ingredient" 
-                Command="{Binding SaveIngredientCommand}" 
-                Style="{StaticResource CustomButtonStyle}" />
+                Command="{Binding SaveIngredientCommand}" />
         </StackPanel>
         
     </Grid>

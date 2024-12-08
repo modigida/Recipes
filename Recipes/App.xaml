@@ -3,19 +3,72 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Recipes"
              StartupUri="MainWindow.xaml">
+    
     <Application.Resources>
-        <!-- Button Style -->
-        <Style x:Key="CustomButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#C2D4CB"/>
-            <Setter Property="BorderBrush" Value="#653E35"/>
-            <Setter Property="Foreground" Value="#653E35"/>
-            <Setter Property="Width" Value="100"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="5"/>
+        <SolidColorBrush x:Key="GlobalBackgroundColor" Color="#C2D4CB"/>
+        <SolidColorBrush x:Key="GlobalForegroundColor" Color="#653E35"/>
+        <SolidColorBrush x:Key="GlobalBorderColor" Color="#653E35"/>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource GlobalForegroundColor}"/>
+            <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource GlobalForegroundColor}"/>
+            <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource GlobalForegroundColor}"/>
+            <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="1"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="1" CornerRadius="4">
+                            <ContentPresenter 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center" 
+                                Margin="5" />
+                            
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource GlobalForegroundColor}"/>
+                    <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+                
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource GlobalForegroundColor}"/>
+                    <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
+                </Trigger>
+
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource GlobalForegroundColor}"/>
+                    <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{StaticResource GlobalForegroundColor}"/>
+            <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
+        </Style>
+
     </Application.Resources>
 </Application>
