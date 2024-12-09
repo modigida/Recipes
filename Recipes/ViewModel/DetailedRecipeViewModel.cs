@@ -69,6 +69,18 @@ public class DetailedRecipeViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
+
+    private CookingTimes _selectedCookingTime;
+    public CookingTimes SelectedCookingTime
+    {
+        get => _selectedCookingTime;
+        set
+        {
+            _selectedCookingTime = value;
+            OnPropertyChanged(nameof(SelectedCookingTime));
+        }
+    }
+
     public ICommand AddRecipeIngredientCommand { get; }
     public ICommand SaveRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }

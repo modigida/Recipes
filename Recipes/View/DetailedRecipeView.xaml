@@ -37,8 +37,8 @@
                 Content="Delete recipe" 
                 Command="{Binding DetailedVM.DeleteRecipeCommand}" />
         </Grid>
-        
-        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
+
+        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.IsSharedSizeScope="True">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -47,7 +47,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Margin="0,0,0,20" Height="100" Grid.IsSharedSizeScope="True">
+            <Grid Grid.Row="0" Margin="0,0,0,20" Height="100" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="content"/>
                     <ColumnDefinition Width="*"/>
@@ -175,18 +175,29 @@
 
                 <Grid Grid.Row="0" Margin="0,10">
                     <ComboBox
-                        IsEditable="False" 
-                        VerticalAlignment="Center" 
+                        IsEditable="False"
+                        VerticalAlignment="Center"
                         HorizontalAlignment="Center"
                         HorizontalContentAlignment="Center"
                         Width="200"
-                        SelectedIndex="0"
-                        ItemsSource="{Binding DetailedVM.CookingTimes}"
-                        DisplayMemberPath="CookingTime"/>
+                        SelectedItem="{Binding DetailedVM.SelectedCookingTime, Mode=TwoWay}"
+                        ItemsSource="{Binding DetailedVM.CookingTimes}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CookingTime}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
                 </Grid>
 
-                <Grid Grid.Row="1">
-                    <Grid Grid.Row="1" Margin="0,5,0,5">
+                <Grid Grid.Row="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="55" SharedSizeGroup="tags"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="tags"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="1" Margin="0,5,0,5" Grid.Column="1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding DetailedVM.RecipeTags}">
                                 <ItemsControl.ItemsPanel>

@@ -22,28 +22,25 @@
             <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
             <Setter Property="Padding" Value="8"/>
             <Setter Property="Cursor" Value="IBeam"/>
-
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}" 
-                        BorderThickness="1" 
-                        Background="{TemplateBinding Background}" 
-                        CornerRadius="4">
-                            <ScrollViewer x:Name="PART_ContentHost" />
+                        <Border 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="1" 
+                            Background="{TemplateBinding Background}" 
+                            CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" Visibility="Collapsed" />
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-
             <Style.Triggers>
                 <Trigger Property="IsFocused" Value="True">
                     <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
                     <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
                 </Trigger>
-
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
                     <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
