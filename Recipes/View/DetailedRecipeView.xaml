@@ -47,30 +47,38 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Margin="0,0,0,20" Height="100">
+            <Grid Grid.Row="0" Margin="0,0,0,20" Height="100" Grid.IsSharedSizeScope="True">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="content"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="content"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBox 
                     Text="{Binding DetailedVM.Recipe.Recipe}" 
+                    Grid.Column="1"
                     FontSize="34" 
                     TextWrapping="Wrap"
                     Width="500"
                     VerticalContentAlignment="Top"
-                    Margin="0,0,10,0"
-                    BorderThickness="0" 
+                    Margin="10,0"
+                    BorderBrush="Transparent"
                     HorizontalContentAlignment="Center" />
-                <Button 
-                    Grid.Column="1" 
-                    Content="★" 
-                    VerticalContentAlignment="Top"
-                    Background="#C2D4CB" 
-                    Foreground="#653E35" 
-                    BorderThickness="0" 
-                    FontSize="34" />
-                <!-- Yellow star if favorite -->
+                
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Button 
+                        Content="★" 
+                        BorderBrush="Transparent"
+                        VerticalContentAlignment="Center"
+                        FontSize="44" />
+                    <!-- Yellow star if favorite -->
+                </Grid>
+                
             </Grid>
 
             <Grid Grid.Row="1" Width="500">
@@ -115,9 +123,6 @@
                     HorizontalAlignment="Center">
 
                     <ComboBox 
-                        Background="#C2D4CB"
-                        BorderBrush="#653E35"
-                        Foreground="#653E35"
                         Width="210"
                         Margin="0,0,5,0"
                         Text="{Binding DetailedVM.NewIngredientName, Mode=TwoWay}"
@@ -127,17 +132,11 @@
                     </ComboBox>
 
                     <TextBox 
-                        Background="#C2D4CB"
-                        BorderBrush="#653E35"
-                        Foreground="#653E35"
                         Width="75"
                         Margin="0,0,5,0"
                         Text="{Binding DetailedVM.NewIngredientQuantity, Mode=TwoWay}" />
 
                     <ComboBox 
-                        Background="#C2D4CB"
-                        BorderBrush="#653E35"
-                        Foreground="#653E35"
                         Width="75"
                         Margin="0,0,5,0"
                         ItemsSource="{Binding DetailedVM.Units}" 
@@ -153,9 +152,6 @@
                     <Button 
                         Content="Add" 
                         Command="{Binding DetailedVM.AddRecipeIngredientCommand}"
-                        Background="#C2D4CB"
-                        BorderBrush="#653E35"
-                        Foreground="#653E35"
                         Width="75" />
                 </StackPanel>
             </Grid>
@@ -163,9 +159,6 @@
             <Grid Grid.Row="2" Width="500">
                 <TextBox 
                     Text="{Binding DetailedVM.Recipe.CookingInstructions}" 
-                    Background="#C2D4CB"
-                    BorderBrush="#653E35"
-                    Foreground="#653E35"
                     TextWrapping="Wrap" 
                     AcceptsReturn="True" 
                     VerticalScrollBarVisibility="Visible"
@@ -189,8 +182,6 @@
                         Width="200"
                         SelectedIndex="0"
                         ItemsSource="{Binding DetailedVM.CookingTimes}"
-                        BorderBrush="#653E35"
-                        Foreground="#653E35"
                         DisplayMemberPath="CookingTime"/>
                 </Grid>
 
@@ -208,11 +199,7 @@
                                         <CheckBox 
                                             Content="{Binding Tag}" 
                                             IsChecked="{Binding IsSelected, Mode=TwoWay}" 
-                                            Background="#C2D4CB"
-                                            BorderBrush="#653E35"
-                                            Foreground="#653E35"
-                                            VerticalAlignment="Center" 
-                                            HorizontalAlignment="Left" />
+                                            FontSize="12" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
