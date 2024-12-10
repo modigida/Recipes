@@ -183,7 +183,6 @@
                             </Popup>
                         </Grid>
                         <ControlTemplate.Triggers>
-                            
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource GlobalFocusedColor}" />
                             </Trigger>
@@ -241,7 +240,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListView">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
                             <ScrollViewer Margin="0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
                                 <ScrollViewer.Resources>
                                     <Style TargetType="ScrollBar">

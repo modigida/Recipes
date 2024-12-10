@@ -65,6 +65,7 @@ public class MainWindowViewModel : BaseViewModel
             new Services.RecipeService(new Database.AppDbContext()), 
             new Services.RecipeIngredientService(new Database.AppDbContext()),
             new RecipeViewModel(new Services.RecipeService(new Database.AppDbContext()), this), this);
+        
         IngredientsVM = new(new Services.IngredientService(new Database.AppDbContext()), new Services.RecipeIngredientService(new Database.AppDbContext()));
 
         IsRecipeViewVisible = true;

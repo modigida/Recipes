@@ -49,6 +49,19 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
     }
 
+    private Ingredients _selectedIngredient;
+    public Ingredients SelectedIngredient
+    {
+        get => _selectedIngredient;
+        set
+        {
+            _selectedIngredient = value;
+            OnPropertyChanged();
+            NewIngredientName = _selectedIngredient?.Ingredient ?? string.Empty;
+            ShowSuggestions = false;
+        }
+    }
+
     private string _newIngredientQuantity;
     public string NewIngredientQuantity
     {
@@ -72,6 +85,7 @@ public class DetailedRecipeViewModel : BaseViewModel
     }
 
     private CookingTimes _selectedCookingTime;
+
     public CookingTimes SelectedCookingTime
     {
         get => _selectedCookingTime;
@@ -81,6 +95,20 @@ public class DetailedRecipeViewModel : BaseViewModel
             OnPropertyChanged(nameof(SelectedCookingTime));
         }
     }
+
+
+    private bool _showSuggestions;
+    public bool ShowSuggestions
+    {
+        get => _showSuggestions;
+        set
+        {
+            _showSuggestions = value;
+            OnPropertyChanged();
+        }
+    }
+
+
 
     public ICommand AddRecipeIngredientCommand { get; }
     public ICommand SaveRecipeCommand { get; }
@@ -141,28 +169,48 @@ public class DetailedRecipeViewModel : BaseViewModel
         ApplyIngredientSearchFilter();
     }
 
+    private bool _isApplyingFilter = false;
     private void ApplyIngredientSearchFilter()
     {
-        if (string.IsNullOrWhiteSpace(NewIngredientName) || NewIngredientName == "Enter ingredient")
+        if (_isApplyingFilter) return;
+
+        _isApplyingFilter = true;
+
+        try
         {
-            FilteredIngredients.Clear();
-            foreach (var ingredient in AllIngredients.OrderBy(i => i.Ingredient))
+
+
+            if (string.IsNullOrWhiteSpace(NewIngredientName) || NewIngredientName == "Enter ingredient")
             {
-                FilteredIngredients.Add(ingredient);
+                // Rensa listan och visa endast blankspace
+                FilteredIngredients.Clear();
+                FilteredIngredients.Add(new Ingredients { Ingredient = " " });
+                ShowSuggestions = false;
+            }
+            else
+            {
+                var bestMatch = AllIngredients
+                    .Where(i => i.Ingredient.StartsWith(NewIngredientName, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(i => i.Ingredient)
+                    .FirstOrDefault();
+
+                FilteredIngredients.Clear();
+
+                if (bestMatch != null)
+                {
+                    FilteredIngredients.Add(bestMatch);
+                    ShowSuggestions = true;
+                }
+                else
+                {
+                    FilteredIngredients.Add(new Ingredients { Ingredient = " " });
+                    ShowSuggestions = false;
+                }
             }
         }
-        else
+        finally
         {
-            var matchingIngredients = AllIngredients
-                .Where(i => i.Ingredient.IndexOf(NewIngredientName, StringComparison.OrdinalIgnoreCase) >= 0)
-                .OrderBy(i => i.Ingredient)
-                .ToList();
-
-            FilteredIngredients.Clear();
-            foreach (var ingredient in matchingIngredients)
-            {
-                FilteredIngredients.Add(ingredient);
-            }
+            _isApplyingFilter = false;
         }
     }
     public async void LoadData(Model.Recipes recipe = null)
