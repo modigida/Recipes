@@ -18,6 +18,15 @@ public class IngredientService
     {
         return await _context.Ingredients.FindAsync(id);
     }
+    public async Task<Ingredients?> GetIngredientByNameAsync(string ingredientName)
+    {
+        return await _context.Ingredients.FirstOrDefaultAsync(i => i.Ingredient == ingredientName);
+    }
+    public void AttachIngredient(Ingredients ingredient)
+    {
+        _context.Ingredients.Attach(ingredient);
+    }
+
     public async Task<int> AddIngredientAsync(Ingredients ingredient)
     {
         _context.Ingredients.Add(ingredient);

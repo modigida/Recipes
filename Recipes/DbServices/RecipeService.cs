@@ -35,20 +35,30 @@ public class RecipeService
     }
     public async Task<int> AddRecipeAsync(Model.Recipes recipe)
     {
-        _context.Recipes.Add(recipe);
+        var newRecipe = new Model.Recipes
+        {
+            Recipe = recipe.Recipe,
+            CookingInstructions = recipe.CookingInstructions,
+            CookingTimeId = recipe.CookingTimeId,
+            IsFavorite = recipe.IsFavorite
+        };
+
+        _context.Recipes.Add(newRecipe);
         await _context.SaveChangesAsync();
-        return recipe.Id;
+        return newRecipe.Id;
     }
     public async Task UpdateRecipeAsync(Model.Recipes recipe)
     {
-        _context.Recipes.Attach(recipe);
+        var existingRecipe = await _context.Recipes.FindAsync(recipe.Id);
+        if (existingRecipe != null)
+        {
+            existingRecipe.Recipe = recipe.Recipe;
+            existingRecipe.CookingInstructions = recipe.CookingInstructions;
+            existingRecipe.CookingTimeId = recipe.CookingTimeId;
+            existingRecipe.IsFavorite = recipe.IsFavorite;
 
-        _context.Entry(recipe).Property(r => r.Recipe).IsModified = true;
-        _context.Entry(recipe).Property(r => r.CookingInstructions).IsModified = true;
-        _context.Entry(recipe).Property(r => r.IsFavorite).IsModified = true;
-        _context.Entry(recipe).Property(r => r.CookingTimeId).IsModified = true;
-
-        await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+        }
     }
     public async Task DeleteRecipeAsync(int id)
     {

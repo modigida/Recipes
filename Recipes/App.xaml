@@ -31,16 +31,21 @@
                             BorderThickness="1" 
                             Background="{TemplateBinding Background}" 
                             CornerRadius="4">
-                            <ScrollViewer x:Name="PART_ContentHost" Visibility="Collapsed" />
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                VerticalScrollBarVisibility="Hidden" 
+                                HorizontalScrollBarVisibility="Hidden"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            
             <Style.Triggers>
+
                 <Trigger Property="IsFocused" Value="True">
                     <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
                     <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
                 </Trigger>
+                
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource GlobalBackgroundColor}"/>
                     <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
@@ -116,6 +121,7 @@
                                   IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                   ClickMode="Press">
                                 <ContentPresenter 
+                                    x:Name="ContentPresenter"
                                     Content="{TemplateBinding SelectionBoxItem}"
                                     ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                     ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
@@ -130,7 +136,23 @@
                                             BorderThickness="{TemplateBinding BorderThickness}" 
                                             CornerRadius="4">
                                             <Grid>
-                                                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                <TextBox 
+                                                    x:Name="PART_EditableTextBox"
+                                                    Visibility="Collapsed"
+                                                    Background="Transparent"
+                                                    Foreground="{TemplateBinding Foreground}"
+                                                    BorderThickness="0"
+                                                    VerticalContentAlignment="Center"
+                                                    Margin="5,0,0,0"
+                                                    HorizontalAlignment="Stretch"/>
+
+                                                <!-- ContentPresenter för icke-redigerbara ComboBox -->
+                                                <ContentPresenter 
+                                                    x:Name="ContentPresenter"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Left"
+                                                    Margin="5,0,0,0"/>
+                                                
                                                 <Path x:Name="Arrow" 
                                                     Data="M 0 0 L 4 4 L 8 0 Z" 
                                                     Fill="{TemplateBinding Foreground}" 
@@ -142,7 +164,8 @@
                                     </ControlTemplate>
                                 </ToggleButton.Template>
                             </ToggleButton>
-                            
+
+
                             <Popup x:Name="Popup"
                                 Placement="Bottom"
                                 IsOpen="{TemplateBinding IsDropDownOpen}"
@@ -160,6 +183,7 @@
                             </Popup>
                         </Grid>
                         <ControlTemplate.Triggers>
+                            
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource GlobalFocusedColor}" />
                             </Trigger>
@@ -185,6 +209,8 @@
             <Setter Property="BorderBrush" Value="{StaticResource GlobalForegroundColor}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="3"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBoxItem">

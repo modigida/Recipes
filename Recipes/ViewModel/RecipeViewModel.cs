@@ -48,7 +48,6 @@ public class RecipeViewModel : BaseViewModel
         }
     }
 
-
     public RecipeViewModel(RecipeService recipeService, MainWindowViewModel mainWindowViewModel)
     {
         _recipeService = recipeService;
@@ -68,9 +67,9 @@ public class RecipeViewModel : BaseViewModel
         {
             recipe.RecipeTags = string.Join(", ",
             recipe.RecipeRecipeTags.Select(rrt => rrt.RecipeTag.Tag));
+            recipe.CookingTime = DetailedRecipeViewModel.CookingTimes.FirstOrDefault(ct => ct.Id == recipe.CookingTimeId);
 
             Recipes.Add(recipe);
-            
         }
         OnPropertyChanged(nameof(Recipes));
     }

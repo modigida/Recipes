@@ -128,7 +128,12 @@
                         Text="{Binding DetailedVM.NewIngredientName, Mode=TwoWay}"
                         IsEditable="True"
                         ItemsSource="{Binding DetailedVM.FilteredIngredients}"
-                        DisplayMemberPath="Ingredient">
+                        Style="{x:Null}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Ingredient}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
 
                     <TextBox 
@@ -140,7 +145,6 @@
                         Width="75"
                         Margin="0,0,5,0"
                         ItemsSource="{Binding DetailedVM.Units}" 
-                        SelectedIndex="7"
                         SelectedItem="{Binding DetailedVM.NewIngredientUnit, Mode=TwoWay}" >
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -161,8 +165,6 @@
                     Text="{Binding DetailedVM.Recipe.CookingInstructions}" 
                     TextWrapping="Wrap" 
                     AcceptsReturn="True" 
-                    VerticalScrollBarVisibility="Visible"
-                    HorizontalScrollBarVisibility="Disabled"
                     FontSize="14" 
                     Height="150"/>
             </Grid>

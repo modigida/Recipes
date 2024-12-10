@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace Recipes.Model;
 public class Recipes
@@ -13,6 +12,7 @@ public class Recipes
 
     [ForeignKey("CookingTimeId")]
     public CookingTimes? CookingTime { get; set; }
+
     public ICollection<RecipeRecipeTags> RecipeRecipeTags { get; set; }
     public ICollection<RecipeIngredients> RecipeIngredients { get; set; }
 

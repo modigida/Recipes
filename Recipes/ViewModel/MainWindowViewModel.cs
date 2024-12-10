@@ -59,6 +59,7 @@ public class MainWindowViewModel : BaseViewModel
     public MainWindowViewModel()
     {
         RecipeVM = new(new Services.RecipeService(new Database.AppDbContext()), this);
+
         DetailedVM = new(new Services.GetStaticListDataService(new Database.AppDbContext()), 
             new Services.IngredientService(new Database.AppDbContext()), new Services.TagService(new Database.AppDbContext()), 
             new Services.RecipeService(new Database.AppDbContext()), 

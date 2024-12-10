@@ -1,4 +1,5 @@
-﻿using Recipes.Commands;
+﻿using Microsoft.EntityFrameworkCore;
+using Recipes.Commands;
 using Recipes.Model;
 using Recipes.Services;
 using Recipes.View;
@@ -20,7 +21,7 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ObservableCollection<Ingredients> AllIngredients { get; set; }
     public ObservableCollection<Ingredients> FilteredIngredients { get; set; }
     public ObservableCollection<Units> Units { get; set; }
-    public ObservableCollection<CookingTimes> CookingTimes { get; set; }
+    public static ObservableCollection<CookingTimes> CookingTimes { get; set; }
     public ObservableCollection<RecipeTags> RecipeTags { get; set; }
     public ObservableCollection<RecipeIngredients> NewRecipeIngredients { get; set; }
 
@@ -101,12 +102,11 @@ public class DetailedRecipeViewModel : BaseViewModel
         FilteredIngredients = new ObservableCollection<Ingredients>();
         NewRecipeIngredients = new ObservableCollection<RecipeIngredients>();
 
-
         LoadAllIngredients();
 
         LoadData();
 
-
+        
 
         AddRecipeIngredientCommand = new RelayCommand(AddRecipeIngredient);
         SaveRecipeCommand = new RelayCommand(SaveRecipe);
@@ -181,10 +181,13 @@ public class DetailedRecipeViewModel : BaseViewModel
             {
                 Recipe = "New Recipe",
                 CookingInstructions = string.Empty,
-                CookingTimeId = CookingTimes.FirstOrDefault()?.Id ?? 0,
+                CookingTimeId = CookingTimes.FirstOrDefault(ct => ct.Id == 2)?.Id ?? 0,
                 RecipeIngredients = new List<RecipeIngredients>()
             };
         }
+
+        SelectedCookingTime = CookingTimes.FirstOrDefault(ct => ct.Id == Recipe.CookingTimeId);
+        NewIngredientUnit = Units.FirstOrDefault(u => u.Id == 8);
 
         if (Recipe?.Id > 0)
         {
@@ -245,6 +248,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
         else
         {
+            Recipe.CookingTimeId = SelectedCookingTime.Id;
             await _recipeService.UpdateRecipeAsync(Recipe);
         }
 
@@ -254,20 +258,28 @@ public class DetailedRecipeViewModel : BaseViewModel
             .ToList();
         await _tagService.SaveSelectedTagsAsync(Recipe.Id, selectedTagIds);
 
-        foreach (var recipeIngredient in NewRecipeIngredients)
+        if (Recipe.Id != 0)
         {
-            var existingIngredient = AllIngredients.FirstOrDefault(i => i.Ingredient == recipeIngredient.Ingredient.Ingredient);
-
-            if (existingIngredient == null)
+            foreach (var recipeIngredient in NewRecipeIngredients)
             {
-                recipeIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(recipeIngredient.Ingredient);
-            }
-            else
-            {
-                recipeIngredient.Ingredient.Id = existingIngredient.Id;
-            }
+                var existingIngredient = await _ingredientService.GetIngredientByNameAsync(recipeIngredient.Ingredient.Ingredient);
 
-            await _recipeIngredientService.AddRecipeIngredientAsync(Recipe.Id, recipeIngredient.Ingredient.Id, recipeIngredient.Quantity, recipeIngredient.Unit.Id);
+                if (existingIngredient == null)
+                {
+                    recipeIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(recipeIngredient.Ingredient);
+                }
+                else
+                {
+                    recipeIngredient.Ingredient = existingIngredient;
+                    _ingredientService.AttachIngredient(recipeIngredient.Ingredient);
+                }
+
+                await _recipeIngredientService.AddRecipeIngredientAsync(
+                    Recipe.Id,
+                    recipeIngredient.Ingredient.Id,
+                    recipeIngredient.Quantity,
+                    recipeIngredient.Unit.Id);
+            }
         }
 
         NewRecipeIngredients.Clear();
@@ -276,6 +288,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
     }
+
     private async void DeleteRecipe(object obj)
     {
         // DELETE from database
