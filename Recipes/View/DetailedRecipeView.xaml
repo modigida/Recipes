@@ -95,10 +95,11 @@
                 <ListView 
                     x:Name="IngredientsListView" 
                     Grid.Row="0" 
-                    Height="130"
+                    Height="160"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding DetailedVM.Recipe.RecipeIngredients}"
+                    SelectedItem="{Binding DetailedVM.SelectedRecipeIngredient}"
                     Background="#C2D4CB"
                     BorderBrush="#653E35"
                     Foreground="#653E35"
@@ -130,7 +131,7 @@
 
                     <StackPanel Margin="0,0,10,0" Height="65">
                         <TextBox Text="{Binding DetailedVM.NewIngredientName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                  Width="200" 
+                                 Width="200" 
                                  Height="35" />
                         <ListView ItemsSource="{Binding DetailedVM.FilteredIngredients}" 
                                  DisplayMemberPath="Ingredient"
@@ -176,7 +177,7 @@
                     TextWrapping="Wrap" 
                     AcceptsReturn="True" 
                     FontSize="14" 
-                    Height="130"/>
+                    Height="120"/>
             </Grid>
 
             <Grid Grid.Row="4" Margin="0,10" Width="500">
@@ -204,17 +205,12 @@
                 </Grid>
 
                 <Grid Grid.Row="1" >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="55" SharedSizeGroup="tags"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="tags"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Row="1" Margin="0,5,0,5" Grid.Column="1">
+                    <Grid Grid.Row="1" Margin="40,5,0,5" >
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding DetailedVM.RecipeTags}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Columns="4" />
+                                        <UniformGrid Columns="5" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>

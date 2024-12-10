@@ -62,6 +62,20 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
     }
 
+    private RecipeIngredients _selectedRecipeIngredient;
+    public RecipeIngredients SelectedRecipeIngredient
+    {
+        get => _selectedRecipeIngredient;
+        set
+        {
+            _selectedRecipeIngredient = value;
+            OnPropertyChanged();
+            NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
+            NewIngredientQuantity = _selectedRecipeIngredient?.Quantity?.ToString() ?? string.Empty;
+            NewIngredientUnit = _selectedRecipeIngredient?.Unit ?? Units[8];
+        }
+    }
+
     private string _newIngredientQuantity;
     public string NewIngredientQuantity
     {
@@ -109,7 +123,6 @@ public class DetailedRecipeViewModel : BaseViewModel
     }
 
 
-
     public ICommand AddRecipeIngredientCommand { get; }
     public ICommand SaveRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }
@@ -133,8 +146,6 @@ public class DetailedRecipeViewModel : BaseViewModel
         LoadAllIngredients();
 
         LoadData();
-
-        
 
         AddRecipeIngredientCommand = new RelayCommand(AddRecipeIngredient);
         SaveRecipeCommand = new RelayCommand(SaveRecipe);
@@ -178,11 +189,8 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         try
         {
-
-
             if (string.IsNullOrWhiteSpace(NewIngredientName) || NewIngredientName == "Enter ingredient")
             {
-                // Rensa listan och visa endast blankspace
                 FilteredIngredients.Clear();
                 FilteredIngredients.Add(new Ingredients { Ingredient = " " });
                 ShowSuggestions = false;
@@ -200,6 +208,11 @@ public class DetailedRecipeViewModel : BaseViewModel
                 {
                     FilteredIngredients.Add(bestMatch);
                     ShowSuggestions = true;
+
+                    if (SelectedRecipeIngredient != null && bestMatch.Ingredient.ToString() == SelectedRecipeIngredient.Ingredient.Ingredient.ToString())
+                    {
+                        ShowSuggestions = false;
+                    }
                 }
                 else
                 {
@@ -278,6 +291,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         if (!NewRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
         {
             NewRecipeIngredients.Add(newIngredient);
+            OnPropertyChanged(nameof(Recipe.RecipeIngredients));
         }
 
         NewIngredientName = string.Empty;
@@ -339,7 +353,6 @@ public class DetailedRecipeViewModel : BaseViewModel
 
     private async void DeleteRecipe(object obj)
     {
-        // DELETE from database
         var result = MessageBox.Show("Are you sure you want to delete this recipe?", "Confirm Delete",
             MessageBoxButton.YesNo, MessageBoxImage.Warning);
         if (result == MessageBoxResult.Yes)
