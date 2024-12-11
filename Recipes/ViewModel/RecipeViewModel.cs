@@ -23,16 +23,8 @@ public class RecipeViewModel : BaseViewModel
         }
     }
 
-    private ObservableCollection<Model.Recipes> _recipes;
-    public ObservableCollection<Model.Recipes> Recipes
-    {
-        get { return _recipes; }
-        set
-        {
-            _recipes = value;
-            OnPropertyChanged();
-        }
-    }
+    public ObservableCollection<Model.Recipes> Recipes { get; set; }
+    
 
     public IEnumerable<string> SortOptions { get; } = new List<string> { "Sort by..", "Name", "Favorite", "Cooking Time" };
 

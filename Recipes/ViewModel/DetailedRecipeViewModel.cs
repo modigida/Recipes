@@ -25,6 +25,8 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ObservableCollection<RecipeTags> RecipeTags { get; set; }
 
 
+
+    // Debug why OnPropertyChanged is needed for RecipeIngredients to show in ListView, should be unnessecary
     private ObservableCollection<RecipeIngredients> _recipeRecipeIngredients;
     public ObservableCollection<RecipeIngredients> RecipeRecipeIngredients 
     { 
@@ -35,19 +37,6 @@ public class DetailedRecipeViewModel : BaseViewModel
             OnPropertyChanged();
         }  
     }
-
-
-    private ObservableCollection<RecipeIngredients> _newRecipeIngredients;
-    public ObservableCollection<RecipeIngredients> NewRecipeIngredients
-    {
-        get => _newRecipeIngredients;
-        set
-        {
-            _newRecipeIngredients = value;
-            OnPropertyChanged();
-        }
-    }
-
 
     private Model.Recipes _recipe;
     public Model.Recipes Recipe
@@ -164,7 +153,6 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         AllIngredients = new ObservableCollection<Ingredients>();
         FilteredIngredients = new ObservableCollection<Ingredients>();
-        NewRecipeIngredients = new ObservableCollection<RecipeIngredients>();
 
         LoadAllIngredients();
 
@@ -295,6 +283,8 @@ public class DetailedRecipeViewModel : BaseViewModel
             OnPropertyChanged(nameof(RecipeTags));
         }
     }
+
+    // Method for updating RecipeIngredients, save directly to database when only updating. 
     private void AddRecipeIngredient(object obj)
     {
         if (string.IsNullOrWhiteSpace(NewIngredientName) || string.IsNullOrWhiteSpace(NewIngredientQuantity) || NewIngredientUnit == null)
@@ -310,13 +300,14 @@ public class DetailedRecipeViewModel : BaseViewModel
             Unit = NewIngredientUnit
         };
 
-        //Recipe.RecipeIngredients.Add(newIngredient);
-        RecipeRecipeIngredients.Add(newIngredient);
-
-        if (!NewRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
+        if (!RecipeRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
         {
-            NewRecipeIngredients.Add(newIngredient);
-            OnPropertyChanged(nameof(Recipe.RecipeIngredients));
+            RecipeRecipeIngredients.Add(newIngredient);
+        }
+        else
+        {
+            MessageBox.Show("Ingredient already exists in recipe.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
 
         NewIngredientName = string.Empty;
@@ -348,29 +339,32 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         if (Recipe.Id != 0)
         {
-            foreach (var recipeIngredient in NewRecipeIngredients)
+            foreach (var recipeIngredient in RecipeRecipeIngredients)
             {
                 var existingIngredient = await _ingredientService.GetIngredientByNameAsync(recipeIngredient.Ingredient.Ingredient);
 
-                if (existingIngredient == null)
+                if (!Recipe.RecipeIngredients.Any(ri => ri.Ingredient.Id == recipeIngredient.Ingredient.Id))
                 {
-                    recipeIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(recipeIngredient.Ingredient);
-                }
-                else
-                {
-                    recipeIngredient.Ingredient = existingIngredient;
-                    _ingredientService.AttachIngredient(recipeIngredient.Ingredient);
-                }
+                    if (existingIngredient == null)
+                    {
+                        recipeIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(recipeIngredient.Ingredient);
+                    }
+                    else
+                    {
+                        recipeIngredient.Ingredient = existingIngredient;
+                        _ingredientService.AttachIngredient(recipeIngredient.Ingredient);
+                    }
 
-                await _recipeIngredientService.AddRecipeIngredientAsync(
-                    Recipe.Id,
-                    recipeIngredient.Ingredient.Id,
-                    recipeIngredient.Quantity,
-                    recipeIngredient.Unit.Id);
+                    await _recipeIngredientService.AddRecipeIngredientAsync(
+                        Recipe.Id,
+                        recipeIngredient.Ingredient.Id,
+                        recipeIngredient.Quantity,
+                        recipeIngredient.Unit.Id);
+                }
             }
         }
 
-        NewRecipeIngredients.Clear();
+        RecipeRecipeIngredients.Clear();
 
         MessageBox.Show("Recipe saved successfully.", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
 
