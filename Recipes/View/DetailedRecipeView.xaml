@@ -98,8 +98,9 @@
                     Height="160"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding DetailedVM.RecipeRecipeIngredients}"
-                    SelectedItem="{Binding DetailedVM.SelectedRecipeIngredient}"
+                    DataContext="{Binding DetailedVM}"
+                    ItemsSource="{Binding RecipeRecipeIngredients}"
+                    SelectedItem="{Binding SelectedRecipeIngredient, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Background="#C2D4CB"
                     BorderBrush="#653E35"
                     Foreground="#653E35"
@@ -112,10 +113,16 @@
                                         <ColumnDefinition Width="4*" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding Ingredient.Ingredient}" />
                                     <TextBlock Grid.Column="1" Text="{Binding Quantity}" />
                                     <TextBlock Grid.Column="2" Text="{Binding Unit.Unit}" />
+                                    <Button 
+                                        Grid.Column="3"
+                                        Content="X"
+                                        Command="{Binding DataContext.DeleteRecipeIngredientCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                        CommandParameter="{Binding}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>

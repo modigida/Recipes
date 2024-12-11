@@ -35,6 +35,26 @@ public class RecipeIngredientService
         _context.RecipeIngredients.Add(recipeIngredient);
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateRecipeIngredientAsync(int recipeId, int ingredientId, string quantity, int unitId)
+    {
+        var recipeIngredient = await _context.RecipeIngredients
+            .FirstOrDefaultAsync(ri => ri.RecipeId == recipeId && ri.IngredientId == ingredientId);
+
+        if (recipeIngredient != null)
+        {
+            recipeIngredient.Quantity = quantity;
+            recipeIngredient.UnitId = unitId;
+
+            _context.RecipeIngredients.Update(recipeIngredient);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new Exception("RecipeIngredient not found.");
+        }
+    }
+
     public async Task RemoveRecipeIngredientAsync(int recipeId, int ingredientId)
     {
         var recipeIngredient = await _context.RecipeIngredients

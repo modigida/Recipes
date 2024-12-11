@@ -136,6 +136,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
 
     public ICommand AddRecipeIngredientCommand { get; }
+    public ICommand DeleteRecipeIngredientCommand { get; }
     public ICommand SaveRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }
     public DetailedRecipeViewModel(GetStaticListDataService staticDataService,
@@ -159,9 +160,11 @@ public class DetailedRecipeViewModel : BaseViewModel
         LoadData();
 
         AddRecipeIngredientCommand = new RelayCommand(AddRecipeIngredient);
+        DeleteRecipeIngredientCommand = new RelayCommand<RecipeIngredients>(async recipeIngredient => await DeleteRecipeIngredient(recipeIngredient));
         SaveRecipeCommand = new RelayCommand(SaveRecipe);
         DeleteRecipeCommand = new RelayCommand(DeleteRecipe);
     }
+
 
     private async void LoadAllIngredients()
     {
@@ -284,7 +287,6 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
     }
 
-    // Method for updating RecipeIngredients, save directly to database when only updating. 
     private void AddRecipeIngredient(object obj)
     {
         if (string.IsNullOrWhiteSpace(NewIngredientName) || string.IsNullOrWhiteSpace(NewIngredientQuantity) || NewIngredientUnit == null)
@@ -303,6 +305,28 @@ public class DetailedRecipeViewModel : BaseViewModel
         if (!RecipeRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
         {
             RecipeRecipeIngredients.Add(newIngredient);
+
+            FilterAvailableIngredients();
+        }
+        else if (SelectedRecipeIngredient != null)
+        {
+            var existingIngredient = RecipeRecipeIngredients
+                .FirstOrDefault(ri => ri.Ingredient.Ingredient == SelectedRecipeIngredient.Ingredient.Ingredient);
+
+            if (existingIngredient != null)
+            {
+                if (existingIngredient.Quantity != NewIngredientQuantity || existingIngredient.UnitId != NewIngredientUnit.Id)
+                {
+                    existingIngredient.Quantity = NewIngredientQuantity;
+                    existingIngredient.UnitId = NewIngredientUnit.Id;
+                    existingIngredient.Unit = Units.FirstOrDefault(u => u.Id == NewIngredientUnit.Id);
+
+
+                    RecipeRecipeIngredients.Remove(SelectedRecipeIngredient);
+                    RecipeRecipeIngredients.Add(existingIngredient);
+                }
+            }
+            SelectedRecipeIngredient = null;
         }
         else
         {
@@ -313,10 +337,44 @@ public class DetailedRecipeViewModel : BaseViewModel
         NewIngredientName = string.Empty;
         NewIngredientQuantity = string.Empty;
         NewIngredientUnit = null;
-
-        OnPropertyChanged(nameof(Recipe));
-        FilterAvailableIngredients();
     }
+
+    private async Task DeleteRecipeIngredient(RecipeIngredients recipeIngredient)
+    {
+        if (recipeIngredient == null)
+        {
+            MessageBox.Show("Please select an ingredient to remove.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var confirmResult = MessageBox.Show($"Are you sure you want to remove '{recipeIngredient.Ingredient.Ingredient}' from the recipe?",
+                                            "Confirm Delete",
+                                            MessageBoxButton.YesNo,
+                                            MessageBoxImage.Question);
+
+        if (confirmResult != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        try
+        {
+            await _recipeIngredientService.RemoveRecipeIngredientAsync(Recipe.Id, recipeIngredient.Ingredient.Id);
+
+            RecipeRecipeIngredients.Remove(recipeIngredient);
+            Recipe.RecipeIngredients.Remove(recipeIngredient);
+
+            SelectedRecipeIngredient = null;
+
+            OnPropertyChanged(nameof(Recipe));
+            OnPropertyChanged(nameof(RecipeRecipeIngredients));
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to remove ingredient: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
 
     private async void SaveRecipe(object obj)
     {
@@ -339,11 +397,16 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         if (Recipe.Id != 0)
         {
+            var dbRecipeIngredients = await _recipeIngredientService.GetIngredientsByRecipeIdAsync(Recipe.Id);
+
             foreach (var recipeIngredient in RecipeRecipeIngredients)
             {
                 var existingIngredient = await _ingredientService.GetIngredientByNameAsync(recipeIngredient.Ingredient.Ingredient);
 
-                if (!Recipe.RecipeIngredients.Any(ri => ri.Ingredient.Id == recipeIngredient.Ingredient.Id))
+                var dbRecipeIngredient = dbRecipeIngredients
+                    .FirstOrDefault(ri => ri.Ingredient.Id == recipeIngredient.Ingredient.Id);
+
+                if (dbRecipeIngredient == null)
                 {
                     if (existingIngredient == null)
                     {
@@ -360,6 +423,18 @@ public class DetailedRecipeViewModel : BaseViewModel
                         recipeIngredient.Ingredient.Id,
                         recipeIngredient.Quantity,
                         recipeIngredient.Unit.Id);
+                }
+                else
+                {
+                    if (dbRecipeIngredient.Quantity != recipeIngredient.Quantity ||
+                        dbRecipeIngredient.Unit.Id != recipeIngredient.Unit.Id)
+                    {
+                        await _recipeIngredientService.UpdateRecipeIngredientAsync(
+                            Recipe.Id,
+                            recipeIngredient.Ingredient.Id,
+                            recipeIngredient.Quantity,
+                            recipeIngredient.Unit.Id);
+                    }
                 }
             }
         }
