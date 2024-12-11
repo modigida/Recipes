@@ -1,4 +1,5 @@
-﻿using Recipes.ViewModel;
+﻿using Recipes.Database;
+using Recipes.ViewModel;
 using System.Windows;
 
 namespace Recipes;
@@ -8,5 +9,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = new MainWindowViewModel();
+
     }
 }

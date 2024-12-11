@@ -23,7 +23,30 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ObservableCollection<Units> Units { get; set; }
     public static ObservableCollection<CookingTimes> CookingTimes { get; set; }
     public ObservableCollection<RecipeTags> RecipeTags { get; set; }
-    public ObservableCollection<RecipeIngredients> NewRecipeIngredients { get; set; }
+
+
+    private ObservableCollection<RecipeIngredients> _recipeRecipeIngredients;
+    public ObservableCollection<RecipeIngredients> RecipeRecipeIngredients 
+    { 
+        get => _recipeRecipeIngredients; 
+        set
+        {
+            _recipeRecipeIngredients = value;
+            OnPropertyChanged();
+        }  
+    }
+
+
+    private ObservableCollection<RecipeIngredients> _newRecipeIngredients;
+    public ObservableCollection<RecipeIngredients> NewRecipeIngredients
+    {
+        get => _newRecipeIngredients;
+        set
+        {
+            _newRecipeIngredients = value;
+            OnPropertyChanged();
+        }
+    }
 
 
     private Model.Recipes _recipe;
@@ -243,10 +266,11 @@ public class DetailedRecipeViewModel : BaseViewModel
                 Recipe = "New Recipe",
                 CookingInstructions = string.Empty,
                 CookingTimeId = CookingTimes.FirstOrDefault(ct => ct.Id == 2)?.Id ?? 0,
-                RecipeIngredients = new List<RecipeIngredients>()
+                RecipeIngredients = new ObservableCollection<RecipeIngredients>()
             };
         }
 
+        RecipeRecipeIngredients = new ObservableCollection<RecipeIngredients>(Recipe.RecipeIngredients);
         SelectedCookingTime = CookingTimes.FirstOrDefault(ct => ct.Id == Recipe.CookingTimeId);
         NewIngredientUnit = Units.FirstOrDefault(u => u.Id == 8);
 
@@ -286,7 +310,8 @@ public class DetailedRecipeViewModel : BaseViewModel
             Unit = NewIngredientUnit
         };
 
-        Recipe.RecipeIngredients.Add(newIngredient);
+        //Recipe.RecipeIngredients.Add(newIngredient);
+        RecipeRecipeIngredients.Add(newIngredient);
 
         if (!NewRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
         {
@@ -318,6 +343,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             .Where(tag => (bool)tag.IsSelected)
             .Select(tag => tag.Id)
             .ToList();
+
         await _tagService.SaveSelectedTagsAsync(Recipe.Id, selectedTagIds);
 
         if (Recipe.Id != 0)
@@ -363,6 +389,4 @@ public class DetailedRecipeViewModel : BaseViewModel
             _mainWindowViewModel.ShowRecipeViewCommand?.Execute(null);
         }
     }
-
-
 }

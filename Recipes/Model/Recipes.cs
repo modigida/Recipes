@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Recipes.Model;
 public class Recipes
@@ -15,7 +16,6 @@ public class Recipes
 
     public ICollection<RecipeRecipeTags> RecipeRecipeTags { get; set; }
     public ICollection<RecipeIngredients> RecipeIngredients { get; set; }
-
 
     [NotMapped]
     public string RecipeTags { get; set; }

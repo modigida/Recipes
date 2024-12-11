@@ -98,7 +98,7 @@
                     Height="160"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding DetailedVM.Recipe.RecipeIngredients}"
+                    ItemsSource="{Binding DetailedVM.RecipeRecipeIngredients}"
                     SelectedItem="{Binding DetailedVM.SelectedRecipeIngredient}"
                     Background="#C2D4CB"
                     BorderBrush="#653E35"

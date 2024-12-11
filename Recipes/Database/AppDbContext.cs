@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Recipes.Model;
 
 namespace Recipes.Database
@@ -16,15 +18,16 @@ namespace Recipes.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = new SqlConnectionStringBuilder()
-            {
-                DataSource = "(localdb)\\MSSQLLocalDB",
-                InitialCatalog = "Recipes",
-                TrustServerCertificate = true,
-                IntegratedSecurity = true
-            }.ToString();
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<AppDbContext>()
+                .Build();
 
-            optionsBuilder.UseSqlServer(connectionString);
+            var connectionString = configuration["ConnectionString"];
+
+            optionsBuilder
+                .UseSqlServer(connectionString)
+                .LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,7 +36,7 @@ namespace Recipes.Database
 
             modelBuilder.Entity<RecipeIngredients>()
                 .HasKey(ri => new { ri.RecipeId, ri.IngredientId });
-            
+
             modelBuilder.Entity<RecipeIngredients>()
                 .HasOne(ri => ri.Recipes)
                 .WithMany(r => r.RecipeIngredients)
