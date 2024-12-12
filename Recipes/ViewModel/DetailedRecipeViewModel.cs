@@ -47,7 +47,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
     }
 
-    private string _newIngredientName = "Enter ingredient";
+    private string _newIngredientName;
     public string NewIngredientName
     {
         get => _newIngredientName;
@@ -261,6 +261,8 @@ public class DetailedRecipeViewModel : BaseViewModel
         RecipeRecipeIngredients = new ObservableCollection<RecipeIngredients>(Recipe.RecipeIngredients);
         SelectedCookingTime = CookingTimes.FirstOrDefault(ct => ct.Id == Recipe.CookingTimeId);
         NewIngredientUnit = Units.FirstOrDefault(u => u.Id == 8);
+        NewIngredientName = "Enter ingredient";
+        NewIngredientQuantity = 0;
 
         if (Recipe?.Id > 0)
         {
@@ -334,9 +336,9 @@ public class DetailedRecipeViewModel : BaseViewModel
             MessageBox.Show("Ingredient already exists in recipe.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        NewIngredientName = string.Empty;
+        NewIngredientName = "Enter ingredient";
         NewIngredientQuantity = 0;
-        NewIngredientUnit = null;
+        NewIngredientUnit = Units.FirstOrDefault(u => u.Id == 8); 
     }
 
     private async Task DeleteRecipeIngredient(RecipeIngredients recipeIngredient)

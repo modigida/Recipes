@@ -75,7 +75,7 @@ public class RecipeViewModel : BaseViewModel
         {
             "Name" => Recipes.OrderBy(r => r.Recipe),
             "Favorite" => Recipes.OrderByDescending(r => r.IsFavorite),
-            "Cooking Time" => Recipes.OrderBy(r => r.CookingTime?.CookingTime),
+            "Cooking Time" => Recipes.OrderBy(r => r.CookingTimeId),
             _ => Recipes
         };
 
