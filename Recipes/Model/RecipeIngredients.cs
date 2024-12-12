@@ -16,5 +16,5 @@ public class RecipeIngredients
     [ForeignKey("UnitId")]
     public Units? Unit { get; set; }
 
-    public string Quantity { get; set; }
+    public double Quantity { get; set; }
 }

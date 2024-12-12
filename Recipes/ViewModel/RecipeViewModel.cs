@@ -80,5 +80,6 @@ public class RecipeViewModel : BaseViewModel
         };
 
         Recipes = new ObservableCollection<Model.Recipes>(sortedRecipes);
+        OnPropertyChanged(nameof(Recipes));
     }
 }

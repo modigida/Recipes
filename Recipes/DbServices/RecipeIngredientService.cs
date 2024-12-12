@@ -22,7 +22,7 @@ public class RecipeIngredientService
     {
         return await _context.RecipeIngredients.AnyAsync(ri => ri.IngredientId == ingredientId);
     }
-    public async Task AddRecipeIngredientAsync(int recipeId, int ingredientId, string quantity, int unitId)
+    public async Task AddRecipeIngredientAsync(int recipeId, int ingredientId, double quantity, int unitId)
     {
         var recipeIngredient = new RecipeIngredients
         {
@@ -36,7 +36,7 @@ public class RecipeIngredientService
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateRecipeIngredientAsync(int recipeId, int ingredientId, string quantity, int unitId)
+    public async Task UpdateRecipeIngredientAsync(int recipeId, int ingredientId, double quantity, int unitId)
     {
         var recipeIngredient = await _context.RecipeIngredients
             .FirstOrDefaultAsync(ri => ri.RecipeId == recipeId && ri.IngredientId == ingredientId);

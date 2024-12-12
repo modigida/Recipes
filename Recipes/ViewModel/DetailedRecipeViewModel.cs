@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Recipes.Commands;
+﻿using Recipes.Commands;
 using Recipes.Model;
 using Recipes.Services;
-using Recipes.View;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -18,6 +16,7 @@ public class DetailedRecipeViewModel : BaseViewModel
     private readonly RecipeViewModel _recipeViewModel;
     private readonly MainWindowViewModel _mainWindowViewModel;
 
+    private bool _isApplyingFilter = false;
     public ObservableCollection<Ingredients> AllIngredients { get; set; }
     public ObservableCollection<Ingredients> FilteredIngredients { get; set; }
     public ObservableCollection<Units> Units { get; set; }
@@ -26,7 +25,6 @@ public class DetailedRecipeViewModel : BaseViewModel
 
 
 
-    // Debug why OnPropertyChanged is needed for RecipeIngredients to show in ListView, should be unnessecary
     private ObservableCollection<RecipeIngredients> _recipeRecipeIngredients;
     public ObservableCollection<RecipeIngredients> RecipeRecipeIngredients 
     { 
@@ -83,13 +81,13 @@ public class DetailedRecipeViewModel : BaseViewModel
             _selectedRecipeIngredient = value;
             OnPropertyChanged();
             NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
-            NewIngredientQuantity = _selectedRecipeIngredient?.Quantity?.ToString() ?? string.Empty;
+            NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? null);
             NewIngredientUnit = _selectedRecipeIngredient?.Unit ?? Units[8];
         }
     }
 
-    private string _newIngredientQuantity;
-    public string NewIngredientQuantity
+    private double? _newIngredientQuantity;
+    public double? NewIngredientQuantity
     {
         get => _newIngredientQuantity;
         set
@@ -170,7 +168,6 @@ public class DetailedRecipeViewModel : BaseViewModel
     {
         var ingredients = await _ingredientService.GetAllIngredientsAsync();
         AllIngredients = new ObservableCollection<Ingredients>(ingredients);
-        FilterAvailableIngredients();
     }
     private void FilterAvailableIngredients()
     {
@@ -194,7 +191,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         ApplyIngredientSearchFilter();
     }
 
-    private bool _isApplyingFilter = false;
+    
     private void ApplyIngredientSearchFilter()
     {
         if (_isApplyingFilter) return;
@@ -206,13 +203,14 @@ public class DetailedRecipeViewModel : BaseViewModel
             if (string.IsNullOrWhiteSpace(NewIngredientName) || NewIngredientName == "Enter ingredient")
             {
                 FilteredIngredients.Clear();
-                FilteredIngredients.Add(new Ingredients { Ingredient = " " });
+                Console.WriteLine(AllIngredients.Count);
                 ShowSuggestions = false;
             }
             else
             {
                 var bestMatch = AllIngredients
-                    .Where(i => i.Ingredient.StartsWith(NewIngredientName, StringComparison.OrdinalIgnoreCase))
+                    .Where(i => i.Ingredient.StartsWith(NewIngredientName, StringComparison.OrdinalIgnoreCase) &&
+                                !RecipeRecipeIngredients.Any(ri => ri.Ingredient.Id == i.Id))
                     .OrderBy(i => i.Ingredient)
                     .FirstOrDefault();
 
@@ -230,7 +228,6 @@ public class DetailedRecipeViewModel : BaseViewModel
                 }
                 else
                 {
-                    FilteredIngredients.Add(new Ingredients { Ingredient = " " });
                     ShowSuggestions = false;
                 }
             }
@@ -285,11 +282,14 @@ public class DetailedRecipeViewModel : BaseViewModel
 
             OnPropertyChanged(nameof(RecipeTags));
         }
+
+        FilterAvailableIngredients();
+
     }
 
-    private void AddRecipeIngredient(object obj)
+    private async void AddRecipeIngredient(object obj)
     {
-        if (string.IsNullOrWhiteSpace(NewIngredientName) || string.IsNullOrWhiteSpace(NewIngredientQuantity) || NewIngredientUnit == null)
+        if (string.IsNullOrWhiteSpace(NewIngredientName) || NewIngredientQuantity == null || NewIngredientUnit == null)
         {
             MessageBox.Show("Please provide valid values for all fields before adding an ingredient.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
@@ -298,7 +298,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         var newIngredient = new RecipeIngredients
         {
             Ingredient = new Ingredients { Ingredient = NewIngredientName },
-            Quantity = NewIngredientQuantity,
+            Quantity = (double)NewIngredientQuantity,
             Unit = NewIngredientUnit
         };
 
@@ -306,36 +306,36 @@ public class DetailedRecipeViewModel : BaseViewModel
         {
             RecipeRecipeIngredients.Add(newIngredient);
 
-            FilterAvailableIngredients();
-        }
-        else if (SelectedRecipeIngredient != null)
-        {
-            var existingIngredient = RecipeRecipeIngredients
-                .FirstOrDefault(ri => ri.Ingredient.Ingredient == SelectedRecipeIngredient.Ingredient.Ingredient);
-
-            if (existingIngredient != null)
+            if (Recipe.Id != 0)
             {
-                if (existingIngredient.Quantity != NewIngredientQuantity || existingIngredient.UnitId != NewIngredientUnit.Id)
+                var existingIngredient = await _ingredientService.GetIngredientByNameAsync(newIngredient.Ingredient.Ingredient);
+
+                if (existingIngredient == null)
                 {
-                    existingIngredient.Quantity = NewIngredientQuantity;
-                    existingIngredient.UnitId = NewIngredientUnit.Id;
-                    existingIngredient.Unit = Units.FirstOrDefault(u => u.Id == NewIngredientUnit.Id);
-
-
-                    RecipeRecipeIngredients.Remove(SelectedRecipeIngredient);
-                    RecipeRecipeIngredients.Add(existingIngredient);
+                    newIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(newIngredient.Ingredient);
                 }
+                else
+                {
+                    newIngredient.Ingredient = existingIngredient;
+                    _ingredientService.AttachIngredient(newIngredient.Ingredient);
+                }
+
+                await _recipeIngredientService.AddRecipeIngredientAsync(
+                    Recipe.Id,
+                    newIngredient.Ingredient.Id,
+                    newIngredient.Quantity,
+                    newIngredient.Unit.Id);
             }
-            SelectedRecipeIngredient = null;
+
+            FilterAvailableIngredients();
         }
         else
         {
             MessageBox.Show("Ingredient already exists in recipe.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
         }
 
         NewIngredientName = string.Empty;
-        NewIngredientQuantity = string.Empty;
+        NewIngredientQuantity = 0;
         NewIngredientUnit = null;
     }
 
@@ -375,7 +375,6 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
     }
 
-
     private async void SaveRecipe(object obj)
     {
         if (Recipe.Id == 0)
@@ -401,23 +400,11 @@ public class DetailedRecipeViewModel : BaseViewModel
 
             foreach (var recipeIngredient in RecipeRecipeIngredients)
             {
-                var existingIngredient = await _ingredientService.GetIngredientByNameAsync(recipeIngredient.Ingredient.Ingredient);
-
                 var dbRecipeIngredient = dbRecipeIngredients
                     .FirstOrDefault(ri => ri.Ingredient.Id == recipeIngredient.Ingredient.Id);
 
                 if (dbRecipeIngredient == null)
                 {
-                    if (existingIngredient == null)
-                    {
-                        recipeIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(recipeIngredient.Ingredient);
-                    }
-                    else
-                    {
-                        recipeIngredient.Ingredient = existingIngredient;
-                        _ingredientService.AttachIngredient(recipeIngredient.Ingredient);
-                    }
-
                     await _recipeIngredientService.AddRecipeIngredientAsync(
                         Recipe.Id,
                         recipeIngredient.Ingredient.Id,
@@ -439,13 +426,10 @@ public class DetailedRecipeViewModel : BaseViewModel
             }
         }
 
-        RecipeRecipeIngredients.Clear();
-
         MessageBox.Show("Recipe saved successfully.", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
 
         _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
     }
-
     private async void DeleteRecipe(object obj)
     {
         var result = MessageBox.Show("Are you sure you want to delete this recipe?", "Confirm Delete",
