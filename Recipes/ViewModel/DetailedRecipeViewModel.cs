@@ -127,10 +127,11 @@ public class DetailedRecipeViewModel : BaseViewModel
         set
         {
             _selectedRecipeIngredient = value;
-            OnPropertyChanged();
             NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
             NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? 0);
-            NewIngredientUnit = _selectedRecipeIngredient?.Unit ?? Units.FirstOrDefault(u => u.Id == 8);
+            NewIngredientUnit = Units.FirstOrDefault(u => u.Id ==_selectedRecipeIngredient.UnitId) ?? Units.FirstOrDefault(u => u.Id == 8); 
+            OnPropertyChanged();
+
         }
     }
 
@@ -155,6 +156,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
+
 
     private CookingTimes _selectedCookingTime;
 
@@ -187,6 +189,7 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ICommand DeleteRecipeCommand { get; }
     public ICommand IsFavoriteCommand { get; }
 
+
     public DetailedRecipeViewModel(GetStaticListDataService staticDataService,
         IngredientService ingredientService, TagService tagsService, RecipeService recipeService,
         RecipeIngredientService recipeIngredientService, RecipeViewModel recipeViewModel,
@@ -214,6 +217,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         DeleteRecipeCommand = new RelayCommand(DeleteRecipe);
         IsFavoriteCommand = new RelayCommand(IsFavorite);
     }
+
 
     private async void LoadAllIngredients()
     {
@@ -523,6 +527,7 @@ public class DetailedRecipeViewModel : BaseViewModel
     {
         if (_recipe.Id != 0)
         {
+            Recipe.CookingTimeId = SelectedCookingTime.Id;
             await _recipeService.UpdateRecipeAsync(Recipe);
         }
     }
