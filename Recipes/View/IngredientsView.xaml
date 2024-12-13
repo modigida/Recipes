@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Recipes.View" 
              xmlns:viewmodel="clr-namespace:Recipes.ViewModel" 
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" >
@@ -53,9 +54,13 @@
 
                             <Button 
                                 Grid.Column="1" 
-                                Content="X"
                                 Command="{Binding DataContext.DeleteIngredientCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                CommandParameter="{Binding}" />
+                                CommandParameter="{Binding}"
+                                BorderBrush="Transparent">
+                                <Button.Content>
+                                    <fa:IconBlock Icon="TrashCan" />
+                                </Button.Content>
+                            </Button>
                         </Grid>
                         
                         <Border Height="1" BorderBrush="#653E35" BorderThickness="0.1" Margin="0,0,0,3" Width="630"/>

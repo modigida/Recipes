@@ -11,10 +11,18 @@
 
   <ItemGroup>
     <None Remove="Resources\food.jpg" />
+    <None Remove="Resources\IsFavoriteSmall.png" />
     <None Remove="Resources\recipesIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\IsFavorite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -34,6 +42,12 @@
 
   <ItemGroup>
     <Resource Include="Resources\food.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\IsFavoriteSmall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\NotFavorite.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\recipesIcon.ico">

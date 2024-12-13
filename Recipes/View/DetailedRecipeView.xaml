@@ -7,6 +7,7 @@
              xmlns:viewmodel="clr-namespace:Recipes.ViewModel" 
              xmlns:converters="clr-namespace:Recipes.Converters"
              xmlns:behaviors="clr-namespace:Recipes.Behaviors" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -54,7 +55,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Margin="0,0,0,20" Height="100" >
+            <Grid Grid.Row="0" Margin="0,0,0,20" Height="110" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="content"/>
                     <ColumnDefinition Width="*"/>
@@ -71,19 +72,34 @@
                     Margin="10,0"
                     BorderBrush="Transparent"
                     HorizontalContentAlignment="Center" />
-                
-                <Grid Grid.Column="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="2*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+
+                <Grid Grid.Column="2" Width="100">
 
                     <Button 
-                        Content="★" 
+                        Command="{Binding DetailedVM.IsFavoriteCommand}"
+                        Visibility="{Binding DetailedVM.IsNotFavoriteRecipe, Converter={StaticResource BoolToVisibilityConverter}}"
                         BorderBrush="Transparent"
                         VerticalContentAlignment="Center"
-                        FontSize="44" />
-                    <!-- Yellow star if favorite -->
+                        FontSize="44" 
+                        Focusable="False" 
+                        Width="60"
+                        Height="60" >
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/Resources/NotFavorite.png"/>
+                        </Button.Content>
+                    </Button>
+
+                    <Button 
+                        Command="{Binding DetailedVM.IsFavoriteCommand}"
+                        Visibility="{Binding DetailedVM.IsFavoriteRecipe, Converter={StaticResource BoolToVisibilityConverter}}"
+                        BorderBrush="Transparent"
+                        VerticalContentAlignment="Center"
+                        FontSize="44" 
+                        Focusable="False" >
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/Resources/IsFavorite.png" Width="100" Height="100"/>
+                        </Button.Content>
+                    </Button>
                 </Grid>
                 
             </Grid>
@@ -117,14 +133,18 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding Ingredient.Ingredient}" />
-                                    <TextBlock Grid.Column="1" Text="{Binding Quantity}" />
-                                    <TextBlock Grid.Column="2" Text="{Binding Unit.Unit}" />
+                                    <TextBlock Grid.Column="0" Text="{Binding Ingredient.Ingredient}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Quantity}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Unit.Unit}" VerticalAlignment="Center" />
                                     <Button 
                                         Grid.Column="3"
-                                        Content="X"
                                         Command="{Binding DataContext.DeleteRecipeIngredientCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                        CommandParameter="{Binding}" />
+                                        CommandParameter="{Binding}" 
+                                        BorderBrush="Transparent" >
+                                        <Button.Content>
+                                            <fa:IconBlock Icon="TrashCan" />
+                                        </Button.Content>
+                                    </Button>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -136,7 +156,6 @@
                     Orientation="Horizontal" 
                     Margin="0,10" 
                     HorizontalAlignment="Center">
-
 
                     <StackPanel Margin="0,0,10,0" Height="65">
                         <TextBox Text="{Binding DetailedVM.NewIngredientName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -151,7 +170,7 @@
                     </StackPanel>
 
                     <TextBox 
-                        Width="75"
+                        Width="60"
                         Height="35"
                         VerticalAlignment="Top"
                         Margin="0,0,5,0"
@@ -162,7 +181,7 @@
                     </TextBox>
 
                     <ComboBox 
-                        Width="75"
+                        Width="100"
                         Height="35"
                         VerticalAlignment="Top"
                         Margin="0,0,5,0"
@@ -180,7 +199,7 @@
                         Height="35"
                         VerticalAlignment="Top"
                         Command="{Binding DetailedVM.AddRecipeIngredientCommand}"
-                        Width="75" />
+                        Width="60" />
                 </StackPanel>
             </Grid>
 

@@ -5,10 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Recipes.View" 
              xmlns:viewmodel="clr-namespace:Recipes.ViewModel" 
+             xmlns:converter="clr-namespace:Recipes.Converters" 
              d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -64,10 +69,15 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{Binding Recipe}" FontSize="24" />
+                        <StackPanel Orientation="Horizontal" >
+                            <TextBlock Text="{Binding Recipe}" FontSize="24" Margin="0,0,20,0"/>
+                            <Image Source="pack://application:,,,/Resources/IsFavoriteSmall.png" 
+                                   Height="30" 
+                                   Visibility="{Binding IsFavorite, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
                         <TextBlock Text="{Binding CookingTime.CookingTime}" FontSize="14" />
                         <TextBlock Text="{Binding RecipeTags}" FontSize="14" Margin="0,0,0,3"/>
-                        <Border Height="1" BorderBrush="#653E35" BorderThickness="0.1" Margin="0,0,0,3" Width="630"/>
+                        <Border Height="1" BorderBrush="#653E35" BorderThickness="0.1" Width="630"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

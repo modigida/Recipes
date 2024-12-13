@@ -62,6 +62,7 @@ public class RecipeViewModel : BaseViewModel
             recipe.CookingTime = DetailedRecipeViewModel.CookingTimes.FirstOrDefault(ct => ct.Id == recipe.CookingTimeId);
 
             Recipes.Add(recipe);
+
         }
         OnPropertyChanged(nameof(Recipes));
     }

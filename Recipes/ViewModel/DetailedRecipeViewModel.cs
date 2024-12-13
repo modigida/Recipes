@@ -2,6 +2,7 @@
 using Recipes.Model;
 using Recipes.Services;
 using System.Collections.ObjectModel;
+using System.DirectoryServices.ActiveDirectory;
 using System.Windows;
 using System.Windows.Input;
 
@@ -47,6 +48,29 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
     }
 
+    private bool _isFavoriteRecipe;
+    public bool IsFavoriteRecipe
+    {
+        get => _isFavoriteRecipe;
+        set
+        {
+            _isFavoriteRecipe = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsNotFavoriteRecipe));
+        }
+    }
+    private bool _isNotFavoriteRecipe;
+    public bool IsNotFavoriteRecipe
+    {
+        get => _isNotFavoriteRecipe;
+        set
+        {
+            _isNotFavoriteRecipe = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsFavoriteRecipe));
+        }
+    }
+
     private string _newIngredientName;
     public string NewIngredientName
     {
@@ -82,7 +106,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             OnPropertyChanged();
             NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
             NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? null);
-            NewIngredientUnit = _selectedRecipeIngredient?.Unit ?? Units[8];
+            NewIngredientUnit = _selectedRecipeIngredient?.Unit ?? Units.FirstOrDefault(u => u.Id == 8);
         }
     }
 
@@ -116,7 +140,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         set
         {
             _selectedCookingTime = value;
-            OnPropertyChanged(nameof(SelectedCookingTime));
+            OnPropertyChanged();
         }
     }
 
@@ -137,6 +161,7 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ICommand DeleteRecipeIngredientCommand { get; }
     public ICommand SaveRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }
+    public ICommand IsFavoriteCommand { get; }
     public DetailedRecipeViewModel(GetStaticListDataService staticDataService,
         IngredientService ingredientService, TagService tagsService, RecipeService recipeService,
         RecipeIngredientService recipeIngredientService, RecipeViewModel recipeViewModel,
@@ -161,8 +186,32 @@ public class DetailedRecipeViewModel : BaseViewModel
         DeleteRecipeIngredientCommand = new RelayCommand<RecipeIngredients>(async recipeIngredient => await DeleteRecipeIngredient(recipeIngredient));
         SaveRecipeCommand = new RelayCommand(SaveRecipe);
         DeleteRecipeCommand = new RelayCommand(DeleteRecipe);
+        IsFavoriteCommand = new RelayCommand(IsFavorite);
     }
 
+    private void IsFavorite(object obj)
+    {
+        if (Recipe.IsFavorite)
+        {
+            Recipe.IsFavorite = false;
+            IsFavoriteRecipe = false;
+            IsNotFavoriteRecipe = true;
+            OnPropertyChanged(nameof(Recipe));
+            OnPropertyChanged(nameof(IsFavoriteRecipe));
+            OnPropertyChanged(nameof(IsNotFavoriteRecipe));
+            _recipeService.UpdateRecipeAsync(Recipe);
+        }
+        else
+        {
+            Recipe.IsFavorite = true;
+            IsFavoriteRecipe = true;
+            IsNotFavoriteRecipe = false;
+            OnPropertyChanged(nameof(Recipe));
+            OnPropertyChanged(nameof(IsFavoriteRecipe));
+            OnPropertyChanged(nameof(IsNotFavoriteRecipe));
+            _recipeService.UpdateRecipeAsync(Recipe);
+        }
+    }
 
     private async void LoadAllIngredients()
     {
@@ -263,6 +312,17 @@ public class DetailedRecipeViewModel : BaseViewModel
         NewIngredientUnit = Units.FirstOrDefault(u => u.Id == 8);
         NewIngredientName = "Enter ingredient";
         NewIngredientQuantity = 0;
+
+        if (Recipe.IsFavorite) 
+        {
+            IsFavoriteRecipe = true;
+            IsNotFavoriteRecipe = false;
+        }
+        else
+        {
+            IsFavoriteRecipe = false;
+            IsNotFavoriteRecipe = true;
+        }
 
         if (Recipe?.Id > 0)
         {
