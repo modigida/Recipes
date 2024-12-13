@@ -22,8 +22,6 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ObservableCollection<Ingredients> FilteredIngredients { get; set; }
     public ObservableCollection<Units> Units { get; set; }
     public static ObservableCollection<CookingTimes> CookingTimes { get; set; }
-    
-    
     public ObservableCollection<RecipeTags> RecipeTags { get; set; }
 
 
@@ -46,10 +44,6 @@ public class DetailedRecipeViewModel : BaseViewModel
         {
             _recipe = value;
             OnPropertyChanged();
-            if (_recipe.Id != 0)
-            {
-                _recipeService.UpdateRecipeAsync(_recipe);
-            }
         }
     }
 
@@ -135,7 +129,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             _selectedRecipeIngredient = value;
             OnPropertyChanged();
             NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
-            NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? null);
+            NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? 0);
             NewIngredientUnit = _selectedRecipeIngredient?.Unit ?? Units.FirstOrDefault(u => u.Id == 8);
         }
     }
@@ -189,9 +183,10 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ICommand ShowRecipeViewCommand { get; }
     public ICommand AddRecipeIngredientCommand { get; }
     public ICommand DeleteRecipeIngredientCommand { get; }
-    public ICommand SaveRecipeCommand { get; }
+    public ICommand CreateRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }
     public ICommand IsFavoriteCommand { get; }
+
     public DetailedRecipeViewModel(GetStaticListDataService staticDataService,
         IngredientService ingredientService, TagService tagsService, RecipeService recipeService,
         RecipeIngredientService recipeIngredientService, RecipeViewModel recipeViewModel,
@@ -215,11 +210,16 @@ public class DetailedRecipeViewModel : BaseViewModel
         ShowRecipeViewCommand = new RelayCommand(ShowRecipeView);
         AddRecipeIngredientCommand = new RelayCommand(AddRecipeIngredient);
         DeleteRecipeIngredientCommand = new RelayCommand<RecipeIngredients>(async recipeIngredient => await DeleteRecipeIngredient(recipeIngredient));
-        SaveRecipeCommand = new RelayCommand(SaveRecipe);
+        CreateRecipeCommand = new RelayCommand(SaveRecipe);
         DeleteRecipeCommand = new RelayCommand(DeleteRecipe);
         IsFavoriteCommand = new RelayCommand(IsFavorite);
     }
 
+    private async void LoadAllIngredients()
+    {
+        var ingredients = await _ingredientService.GetAllIngredientsAsync();
+        AllIngredients = new ObservableCollection<Ingredients>(ingredients);
+    }
 
     private async void IsFavorite(object obj)
     {
@@ -240,12 +240,6 @@ public class DetailedRecipeViewModel : BaseViewModel
         OnPropertyChanged(nameof(IsFavoriteRecipe));
         OnPropertyChanged(nameof(IsNotFavoriteRecipe));
         UpdateRecipe();
-    }
-
-    private async void LoadAllIngredients()
-    {
-        var ingredients = await _ingredientService.GetAllIngredientsAsync();
-        AllIngredients = new ObservableCollection<Ingredients>(ingredients);
     }
     private void FilterAvailableIngredients()
     {
@@ -268,8 +262,6 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         ApplyIngredientSearchFilter();
     }
-
-    
     private void ApplyIngredientSearchFilter()
     {
         if (_isApplyingFilter) return;
@@ -363,6 +355,14 @@ public class DetailedRecipeViewModel : BaseViewModel
             IsNotFavoriteRecipe = true;
         }
 
+        await LoadTags();
+        await SortRecipeIngredients();
+
+        FilterAvailableIngredients();
+    }
+
+    private async Task LoadTags()
+    {
         if (Recipe?.Id > 0)
         {
             var tagsForRecipe = await _tagService.GetTagsForRecipeAsync(Recipe.Id);
@@ -383,9 +383,6 @@ public class DetailedRecipeViewModel : BaseViewModel
 
             OnPropertyChanged(nameof(RecipeTags));
         }
-
-        FilterAvailableIngredients();
-
     }
 
     private async void AddRecipeIngredient(object obj)
@@ -400,10 +397,36 @@ public class DetailedRecipeViewModel : BaseViewModel
         {
             Ingredient = new Ingredients { Ingredient = NewIngredientName },
             Quantity = (double)NewIngredientQuantity,
+            UnitId = NewIngredientUnit.Id,
             Unit = NewIngredientUnit
         };
 
-        if (!RecipeRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
+        if (RecipeRecipeIngredients.Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient))
+        {
+
+            var existingRecipeIngredient = RecipeRecipeIngredients
+                .First(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient);
+
+            RecipeRecipeIngredients.Remove(existingRecipeIngredient);
+
+            existingRecipeIngredient.Quantity = newIngredient.Quantity;
+            existingRecipeIngredient.Unit = newIngredient.Unit;
+
+            RecipeRecipeIngredients.Add(existingRecipeIngredient);
+
+            if (Recipe.Id != 0)
+            {
+                await _recipeIngredientService.UpdateRecipeIngredientAsync(
+                    Recipe.Id,
+                    existingRecipeIngredient.Ingredient.Id,
+                    existingRecipeIngredient.Quantity,
+                    existingRecipeIngredient.Unit.Id);
+            }
+
+            OnPropertyChanged(nameof(RecipeRecipeIngredients));
+            FilterAvailableIngredients();
+        }
+        else
         {
             RecipeRecipeIngredients.Add(newIngredient);
 
@@ -430,14 +453,25 @@ public class DetailedRecipeViewModel : BaseViewModel
 
             FilterAvailableIngredients();
         }
-        else
-        {
-            MessageBox.Show("Ingredient already exists in recipe.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
+
+        await SortRecipeIngredients();
 
         NewIngredientName = "Enter ingredient";
         NewIngredientQuantity = 0;
         NewIngredientUnit = Units.FirstOrDefault(u => u.Id == 8); 
+    }
+
+    private async Task SortRecipeIngredients()
+    {
+        var sortedList = RecipeRecipeIngredients
+        .OrderBy(ri => ri.Ingredient.Ingredient)
+        .ToList();
+
+        RecipeRecipeIngredients.Clear();
+        foreach (var ingredient in sortedList)
+        {
+            RecipeRecipeIngredients.Add(ingredient);
+        }
     }
 
     private async Task DeleteRecipeIngredient(RecipeIngredients recipeIngredient)
