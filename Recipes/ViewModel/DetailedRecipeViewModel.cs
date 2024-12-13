@@ -22,8 +22,9 @@ public class DetailedRecipeViewModel : BaseViewModel
     public ObservableCollection<Ingredients> FilteredIngredients { get; set; }
     public ObservableCollection<Units> Units { get; set; }
     public static ObservableCollection<CookingTimes> CookingTimes { get; set; }
+    
+    
     public ObservableCollection<RecipeTags> RecipeTags { get; set; }
-
 
 
     private ObservableCollection<RecipeIngredients> _recipeRecipeIngredients;
@@ -45,6 +46,34 @@ public class DetailedRecipeViewModel : BaseViewModel
         {
             _recipe = value;
             OnPropertyChanged();
+            if (_recipe.Id != 0)
+            {
+                _recipeService.UpdateRecipeAsync(_recipe);
+            }
+        }
+    }
+
+    private bool _isDeleteAvailable;
+    public bool IsDeleteAvailable
+    {
+        get => _isDeleteAvailable;
+        set
+        {
+            _isDeleteAvailable = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsSaveAvailable));
+        }
+    }
+
+    private bool _isSaveAvailable;
+    public bool IsSaveAvailable
+    {
+        get => _isSaveAvailable;
+        set
+        {
+            _isSaveAvailable = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsDeleteAvailable));
         }
     }
 
@@ -59,6 +88,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             OnPropertyChanged(nameof(IsNotFavoriteRecipe));
         }
     }
+
     private bool _isNotFavoriteRecipe;
     public bool IsNotFavoriteRecipe
     {
@@ -156,7 +186,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
     }
 
-
+    public ICommand ShowRecipeViewCommand { get; }
     public ICommand AddRecipeIngredientCommand { get; }
     public ICommand DeleteRecipeIngredientCommand { get; }
     public ICommand SaveRecipeCommand { get; }
@@ -182,6 +212,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         LoadData();
 
+        ShowRecipeViewCommand = new RelayCommand(ShowRecipeView);
         AddRecipeIngredientCommand = new RelayCommand(AddRecipeIngredient);
         DeleteRecipeIngredientCommand = new RelayCommand<RecipeIngredients>(async recipeIngredient => await DeleteRecipeIngredient(recipeIngredient));
         SaveRecipeCommand = new RelayCommand(SaveRecipe);
@@ -189,28 +220,26 @@ public class DetailedRecipeViewModel : BaseViewModel
         IsFavoriteCommand = new RelayCommand(IsFavorite);
     }
 
-    private void IsFavorite(object obj)
+
+    private async void IsFavorite(object obj)
     {
         if (Recipe.IsFavorite)
         {
             Recipe.IsFavorite = false;
             IsFavoriteRecipe = false;
             IsNotFavoriteRecipe = true;
-            OnPropertyChanged(nameof(Recipe));
-            OnPropertyChanged(nameof(IsFavoriteRecipe));
-            OnPropertyChanged(nameof(IsNotFavoriteRecipe));
-            _recipeService.UpdateRecipeAsync(Recipe);
         }
         else
         {
             Recipe.IsFavorite = true;
             IsFavoriteRecipe = true;
             IsNotFavoriteRecipe = false;
-            OnPropertyChanged(nameof(Recipe));
-            OnPropertyChanged(nameof(IsFavoriteRecipe));
-            OnPropertyChanged(nameof(IsNotFavoriteRecipe));
-            _recipeService.UpdateRecipeAsync(Recipe);
         }
+
+        OnPropertyChanged(nameof(Recipe));
+        OnPropertyChanged(nameof(IsFavoriteRecipe));
+        OnPropertyChanged(nameof(IsNotFavoriteRecipe));
+        UpdateRecipe();
     }
 
     private async void LoadAllIngredients()
@@ -313,6 +342,16 @@ public class DetailedRecipeViewModel : BaseViewModel
         NewIngredientName = "Enter ingredient";
         NewIngredientQuantity = 0;
 
+        if (Recipe.Id != 0)
+        {
+            IsDeleteAvailable = true;
+            IsSaveAvailable = false;
+        }
+        else
+        {
+            IsDeleteAvailable = false;
+            IsSaveAvailable = true;
+        }
         if (Recipe.IsFavorite) 
         {
             IsFavoriteRecipe = true;
@@ -436,7 +475,32 @@ public class DetailedRecipeViewModel : BaseViewModel
             MessageBox.Show($"Failed to remove ingredient: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
+    private async void ShowRecipeView(object obj)
+    {
+        if (Recipe.Id != 0)
+        {
+            UpdateRecipe();
+            SaveTags();
+        }
 
+        _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
+    }
+    private async void UpdateRecipe()
+    {
+        if (_recipe.Id != 0)
+        {
+            await _recipeService.UpdateRecipeAsync(Recipe);
+        }
+    }
+    private async void SaveTags()
+    {
+        var selectedTagIds = RecipeTags
+            .Where(tag => (bool)tag.IsSelected)
+            .Select(tag => tag.Id)
+            .ToList();
+
+        await _tagService.SaveSelectedTagsAsync(Recipe.Id, selectedTagIds);
+    }
     private async void SaveRecipe(object obj)
     {
         if (Recipe.Id == 0)
@@ -449,12 +513,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             await _recipeService.UpdateRecipeAsync(Recipe);
         }
 
-        var selectedTagIds = RecipeTags
-            .Where(tag => (bool)tag.IsSelected)
-            .Select(tag => tag.Id)
-            .ToList();
-
-        await _tagService.SaveSelectedTagsAsync(Recipe.Id, selectedTagIds);
+        SaveTags();
 
         if (Recipe.Id != 0)
         {
@@ -490,7 +549,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         MessageBox.Show("Recipe saved successfully.", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
 
-        _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
+        ShowRecipeView(null);
     }
     private async void DeleteRecipe(object obj)
     {

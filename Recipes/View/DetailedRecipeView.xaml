@@ -25,7 +25,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="10">
@@ -38,12 +37,19 @@
             <Button 
                 Grid.Column="0" 
                 Content="View all recipes" 
-                Command="{Binding ShowRecipeViewCommand}"  />
+                Command="{Binding DetailedVM.ShowRecipeViewCommand}"  />
 
             <Button 
                 Grid.Column="2"
                 Content="Delete recipe" 
-                Command="{Binding DetailedVM.DeleteRecipeCommand}" />
+                Command="{Binding DetailedVM.DeleteRecipeCommand}"
+                Visibility="{Binding DetailedVM.IsDeleteAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+            <Button 
+                Grid.Column="2"
+                Content="Create recipe" 
+                Command="{Binding DetailedVM.SaveRecipeCommand}"
+                Visibility="{Binding DetailedVM.IsSaveAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
         </Grid>
 
         <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.IsSharedSizeScope="True">
@@ -63,7 +69,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox 
-                    Text="{Binding DetailedVM.Recipe.Recipe}" 
+                    Text="{Binding DetailedVM.Recipe.Recipe, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                     Grid.Column="1"
                     FontSize="34" 
                     TextWrapping="Wrap"
@@ -113,7 +119,7 @@
                 <ListView 
                     x:Name="IngredientsListView" 
                     Grid.Row="0" 
-                    Height="160"
+                    Height="200"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     DataContext="{Binding DetailedVM}"
@@ -249,7 +255,7 @@
                                     <DataTemplate>
                                         <CheckBox 
                                             Content="{Binding Tag}" 
-                                            IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                                            IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                             FontSize="12" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -260,12 +266,5 @@
             </Grid>
         </Grid>
         
-        <Grid Grid.Row="3" Margin="10" HorizontalAlignment="Center">
-            <Button 
-                Content="Save recipe"
-                Command="{Binding DetailedVM.SaveRecipeCommand}"
-                Width="200" 
-                Height="60"/>
-        </Grid>
     </Grid>
 </UserControl>
