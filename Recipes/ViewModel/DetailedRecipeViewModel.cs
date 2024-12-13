@@ -2,7 +2,6 @@
 using Recipes.Model;
 using Recipes.Services;
 using System.Collections.ObjectModel;
-using System.DirectoryServices.ActiveDirectory;
 using System.Windows;
 using System.Windows.Input;
 
@@ -129,7 +128,16 @@ public class DetailedRecipeViewModel : BaseViewModel
             _selectedRecipeIngredient = value;
             NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
             NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? 0);
-            NewIngredientUnit = Units.FirstOrDefault(u => u.Id ==_selectedRecipeIngredient.UnitId) ?? Units.FirstOrDefault(u => u.Id == 8); 
+
+            if (_selectedRecipeIngredient != null)
+            {
+                NewIngredientUnit = Units.FirstOrDefault(u => u.Id == _selectedRecipeIngredient.UnitId) ?? Units.FirstOrDefault(u => u.Id == 8);
+            }
+            else
+            {
+                NewIngredientUnit = Units?.FirstOrDefault(u => u.Id == 8);
+            }
+
             OnPropertyChanged();
 
         }
@@ -213,7 +221,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         ShowRecipeViewCommand = new RelayCommand(ShowRecipeView);
         AddRecipeIngredientCommand = new RelayCommand(AddRecipeIngredient);
         DeleteRecipeIngredientCommand = new RelayCommand<RecipeIngredients>(async recipeIngredient => await DeleteRecipeIngredient(recipeIngredient));
-        CreateRecipeCommand = new RelayCommand(SaveRecipe);
+        CreateRecipeCommand = new RelayCommand(CreateRecipe);
         DeleteRecipeCommand = new RelayCommand(DeleteRecipe);
         IsFavoriteCommand = new RelayCommand(IsFavorite);
     }
@@ -520,6 +528,15 @@ public class DetailedRecipeViewModel : BaseViewModel
             UpdateRecipe();
             SaveTags();
         }
+        else
+        {
+            var result = MessageBox.Show("You have not saved the recipe. If you continue without saving, all changes will be lost. " +
+                "Do you want to save before proceeding?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                CreateRecipe(null);
+            }
+        }
 
         _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
     }
@@ -540,7 +557,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         await _tagService.SaveSelectedTagsAsync(Recipe.Id, selectedTagIds);
     }
-    private async void SaveRecipe(object obj)
+    private async void CreateRecipe(object obj)
     {
         if (Recipe.Id == 0)
         {
@@ -556,15 +573,29 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         if (Recipe.Id != 0)
         {
-            var dbRecipeIngredients = await _recipeIngredientService.GetIngredientsByRecipeIdAsync(Recipe.Id);
 
+            var dbRecipeIngredients = await _recipeIngredientService.GetIngredientsByRecipeIdAsync(Recipe.Id);
+            
             foreach (var recipeIngredient in RecipeRecipeIngredients)
             {
                 var dbRecipeIngredient = dbRecipeIngredients
                     .FirstOrDefault(ri => ri.Ingredient.Id == recipeIngredient.Ingredient.Id);
-
+            
                 if (dbRecipeIngredient == null)
                 {
+
+                    var existingIngredient = await _ingredientService.GetIngredientByNameAsync(recipeIngredient.Ingredient.Ingredient);
+
+                    if (existingIngredient == null)
+                    {
+                        recipeIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(recipeIngredient.Ingredient);
+                    }
+                    else
+                    {
+                        recipeIngredient.Ingredient = existingIngredient;
+                        _ingredientService.AttachIngredient(recipeIngredient.Ingredient);
+                    }
+
                     await _recipeIngredientService.AddRecipeIngredientAsync(
                         Recipe.Id,
                         recipeIngredient.Ingredient.Id,

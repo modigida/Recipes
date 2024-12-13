@@ -1,4 +1,5 @@
 ﻿using Recipes.Commands;
+using Recipes.Model;
 using System.Windows.Input;
 
 namespace Recipes.ViewModel;
@@ -79,6 +80,10 @@ public class MainWindowViewModel : BaseViewModel
     public void ShowRecipeView(object obj)
     {
         RecipeVM.LoadRecipes();
+        if (RecipeVM.SortOptions != null)
+        {
+            RecipeVM.SelectedSortOption = RecipeVM.SortOptions.FirstOrDefault(s => s == "Sort by..");
+        }
         IsDetailedViewVisible = false;
         IsIngredientViewVisible = false;
         IsRecipeViewVisible = true;
