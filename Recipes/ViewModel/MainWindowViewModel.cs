@@ -24,18 +24,6 @@ public class MainWindowViewModel : BaseViewModel
         {
             _isDetailedViewVisible = value;
             OnPropertyChanged();
-
-            if (_isDetailedViewVisible)
-            {
-                if (RecipeVM.SelectedRecipe != null)
-                {
-                    DetailedVM.LoadData(RecipeVM.SelectedRecipe);
-                }
-                else
-                {
-                    DetailedVM.LoadData();
-                }
-            }
         }
     }
     private bool _isIngredientViewVisible;
@@ -102,8 +90,17 @@ public class MainWindowViewModel : BaseViewModel
         IsDetailedViewVisible = false;
         IsIngredientViewVisible = true; 
     }
-    public void OpenDetailedRecipe()
+    public async void OpenDetailedRecipe()
     {
+        if (RecipeVM.SelectedRecipe != null)
+        {
+            await DetailedVM.LoadData(RecipeVM.SelectedRecipe);
+        }
+        else
+        {
+            await DetailedVM.LoadData();
+        }
+
         IsRecipeViewVisible = false;
         IsIngredientViewVisible = false;
         IsDetailedViewVisible = true;

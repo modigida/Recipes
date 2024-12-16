@@ -319,7 +319,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             _isApplyingFilter = false;
         }
     }
-    public async void LoadData(Model.Recipes recipe = null)
+    public async Task LoadData(Model.Recipes recipe = null)
     {
         Units = new ObservableCollection<Units>(_staticDataService.GetUnits());
         CookingTimes = new ObservableCollection<CookingTimes>(_staticDataService.GetCookingTimes());
@@ -327,7 +327,8 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         if (recipe != null)
         {
-            Recipe = recipe;
+            //Recipe = recipe;
+            Recipe = await _recipeService.GetRecipeByIdAsync(recipe.Id);
         }
         else
         {

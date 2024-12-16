@@ -127,9 +127,6 @@
                     DataContext="{Binding DetailedVM}"
                     ItemsSource="{Binding RecipeRecipeIngredients}"
                     SelectedItem="{Binding SelectedRecipeIngredient, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Background="#C2D4CB"
-                    BorderBrush="#653E35"
-                    Foreground="#653E35"
                     FontSize="14">
                     <ListView.ItemTemplate>
                         <DataTemplate>

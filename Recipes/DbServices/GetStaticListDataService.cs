@@ -11,14 +11,38 @@ public class GetStaticListDataService
     }
     public List<Units> GetUnits()
     {
-        return _context.Units.ToList();
+        try
+        {
+            return _context.Units.ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching units: {ex.Message}");
+            return new List<Units>();
+        }
     }
     public List<CookingTimes> GetCookingTimes()
     {
-        return _context.CookingTimes.ToList();
+        try
+        {
+            return _context.CookingTimes.ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching cooking times: {ex.Message}");
+            return new List<CookingTimes>();
+        }
     }
     public List<RecipeTags> GetRecipeTags()
     {
-        return _context.RecipeTags.ToList();
+        try
+        {
+            return _context.RecipeTags.ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching recipe tags: {ex.Message}");
+            return new List<RecipeTags>();
+        }
     }
 }

@@ -93,6 +93,8 @@ public class IngredientsViewModel : BaseViewModel
             {
                 MessageBox.Show($"The ingredient '{NewIngredientName}' already exists.",
                                 "Duplicate Ingredient", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                NewIngredientName = string.Empty;
                 return;
             }
 

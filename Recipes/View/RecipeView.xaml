@@ -56,13 +56,10 @@
             ItemsSource="{Binding SortOptions}"
             SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}"
             IsReadOnly="True"
-            BorderBrush="#653E35"
             Margin="0,0,0,15"/>
         
         <ListView 
             Grid.Row="2" 
-            Background="#C2D4CB"
-            Foreground="#653E35" 
             DataContext="{Binding RecipeVM}"
             ItemsSource="{Binding Recipes}"
             SelectedItem="{Binding SelectedRecipe}">
