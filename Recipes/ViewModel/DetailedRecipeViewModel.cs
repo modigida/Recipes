@@ -399,7 +399,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
     private async void AddRecipeIngredient(object obj)
     {
-        if (string.IsNullOrWhiteSpace(NewIngredientName) || NewIngredientQuantity == null || NewIngredientUnit == null)
+        if (string.IsNullOrWhiteSpace(NewIngredientName) || NewIngredientName == "Enter ingredient" || NewIngredientQuantity == null || NewIngredientUnit == null)
         {
             MessageBox.Show("Please provide valid values for all fields before adding an ingredient.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
@@ -530,11 +530,14 @@ public class DetailedRecipeViewModel : BaseViewModel
         }
         else
         {
-            var result = MessageBox.Show("You have not saved the recipe. If you continue without saving, all changes will be lost. " +
-                "Do you want to save before proceeding?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.Yes)
+            if (Recipe.Recipe != "New Recipe" || RecipeRecipeIngredients.Count > 0)
             {
-                CreateRecipe(null);
+                var result = MessageBox.Show("You have not saved the recipe. If you continue without saving, all changes will be lost. " +
+                                "Do you want to save before proceeding?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    CreateRecipe(null);
+                }
             }
         }
 
