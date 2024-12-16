@@ -39,17 +39,17 @@ The application serves as a digital recipe book where users can:
    ```bash  
    git clone https://github.com/modigida/Recipes.git
 
-<img src="Recipes/Images/RecipeIngredientList.png" alt="Image of ingredients in recipe" width="400" >
-
 2. **Set Up the Database**:  
 - Add your own connection string to the project.
-- Optionally, restore the provided backup file to your SQL Server using Management Studio (SSMS) to use the same database that was used during development.
+- Optionally, restore the provided [backup file](https://github.com/modigida/Recipes/blob/main/Recipes.bak) to your SQL Server using Management Studio (SSMS) to use the same database that was used during development.
 
-<img src="Recipes/Images/AddIngredientSuggestion.png" alt="Image of suggestions when adding ingredient in recipe" width="200" >
+<img src="Recipes/Images/ER-diagramDatabase.png" alt="Image of database tables" width="600" >
 
 3. **Run the Application**:  
 Open the solution in Visual Studio, build the project, and run the application.
 
+<img src="Recipes/Images/AddIngredientSuggestion.png" alt="Image of suggestions when adding ingredient in recipe" width="200" >
+<img src="Recipes/Images/RecipeIngredientList.png" alt="Image of ingredients in recipe" width="400" >
 ## Features
 - A user-friendly interface for managing recipes and ingredients.
 - Sorting functionality for recipes to easily find favorites, quickest to prepare, or alphabetical order.
