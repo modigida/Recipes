@@ -9,32 +9,21 @@ public class MainWindowViewModel : BaseViewModel
     public bool IsRecipeViewVisible
     {
         get => _isRecipeViewVisible;
-        set
-        {
-            _isRecipeViewVisible = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _isRecipeViewVisible, value);
     }
 
     private bool _isDetailedViewVisible;
     public bool IsDetailedViewVisible
     {
         get => _isDetailedViewVisible;
-        set
-        {
-            _isDetailedViewVisible = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _isDetailedViewVisible, value);
     }
+
     private bool _isIngredientViewVisible;
     public bool IsIngredientViewVisible
     {
         get => _isIngredientViewVisible;
-        set
-        {
-            _isIngredientViewVisible = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _isIngredientViewVisible, value);
     }
 
     public ICommand OpenDetailedViewCommand { get; }

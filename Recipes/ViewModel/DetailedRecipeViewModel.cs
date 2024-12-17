@@ -21,78 +21,51 @@ public class DetailedRecipeViewModel : BaseViewModel
 
     public ObservableCollection<Ingredients> AllIngredients { get; set; }
     public ObservableCollection<Ingredients> FilteredIngredients { get; set; }
-    public static ObservableCollection<Units> Units { get; set; }
-    public static ObservableCollection<CookingTimes> CookingTimes { get; set; }
+    public static ObservableCollection<Units> Units { get; set; } = new();
+    public static ObservableCollection<CookingTimes> CookingTimes { get; set; } = new();
     public ObservableCollection<RecipeTags> RecipeTags { get; set; }
 
     private ObservableCollection<RecipeIngredients> _recipeRecipeIngredients;
-    public ObservableCollection<RecipeIngredients> RecipeRecipeIngredients 
-    { 
-        get => _recipeRecipeIngredients; 
-        set
-        {
-            _recipeRecipeIngredients = value;
-            OnPropertyChanged();
-        }  
+    public ObservableCollection<RecipeIngredients> RecipeRecipeIngredients
+    {
+        get => _recipeRecipeIngredients;
+        set => SetProperty(ref _recipeRecipeIngredients, value);
     }
 
     private Model.Recipes _recipe;
     public Model.Recipes Recipe
     {
         get => _recipe;
-        set
-        {
-            _recipe = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _recipe, value);
     }
 
     private bool _isDeleteAvailable;
     public bool IsDeleteAvailable
     {
         get => _isDeleteAvailable;
-        set
-        {
-            _isDeleteAvailable = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsSaveAvailable));
-        }
+        set => SetProperty(ref _isDeleteAvailable, value, new[] { nameof(IsSaveAvailable) });
     }
 
     private bool _isSaveAvailable;
     public bool IsSaveAvailable
     {
         get => _isSaveAvailable;
-        set
-        {
-            _isSaveAvailable = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsDeleteAvailable));
-        }
+        set => SetProperty(ref _isSaveAvailable, value);
     }
+
 
     private bool _isFavoriteRecipe;
     public bool IsFavoriteRecipe
     {
         get => _isFavoriteRecipe;
-        set
-        {
-            _isFavoriteRecipe = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsNotFavoriteRecipe));
-        }
+        set => SetProperty(ref _isFavoriteRecipe, value, new[] { nameof(IsNotFavoriteRecipe) });
     }
 
     private bool _isNotFavoriteRecipe;
     public bool IsNotFavoriteRecipe
     {
         get => _isNotFavoriteRecipe;
-        set
-        {
-            _isNotFavoriteRecipe = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsFavoriteRecipe));
-        }
+        set => SetProperty(ref _isNotFavoriteRecipe, value, new[] { nameof(IsFavoriteRecipe) });
     }
 
     private string _newIngredientName;
@@ -101,9 +74,10 @@ public class DetailedRecipeViewModel : BaseViewModel
         get => _newIngredientName;
         set
         {
-            _newIngredientName = value;
-            OnPropertyChanged();
-            _detailedRecipeIngredientViewModel.ApplyIngredientSearchFilter();
+            if (SetProperty(ref _newIngredientName, value))
+            {
+                _detailedRecipeIngredientViewModel.ApplyIngredientSearchFilter();
+            }
         }
     }
 
@@ -113,10 +87,11 @@ public class DetailedRecipeViewModel : BaseViewModel
         get => _selectedIngredient;
         set
         {
-            _selectedIngredient = value;
-            OnPropertyChanged();
-            NewIngredientName = _selectedIngredient?.Ingredient ?? string.Empty;
-            ShowSuggestions = false;
+            if (SetProperty(ref _selectedIngredient, value))
+            {
+                NewIngredientName = _selectedIngredient?.Ingredient ?? string.Empty;
+                ShowSuggestions = false;
+            }
         }
     }
 
@@ -126,21 +101,15 @@ public class DetailedRecipeViewModel : BaseViewModel
         get => _selectedRecipeIngredient;
         set
         {
-            _selectedRecipeIngredient = value;
-            NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
-            NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? 0);
-
-            if (_selectedRecipeIngredient != null)
+            if (SetProperty(ref _selectedRecipeIngredient, value))
             {
-                NewIngredientUnit = Units.FirstOrDefault(u => u.Id == _selectedRecipeIngredient.UnitId) ?? Units.FirstOrDefault(u => u.Id == 8);
-            }
-            else
-            {
-                NewIngredientUnit = Units?.FirstOrDefault(u => u.Id == 8);
-            }
+                NewIngredientName = _selectedRecipeIngredient?.Ingredient?.Ingredient.ToString() ?? string.Empty;
+                NewIngredientQuantity = (double)(_selectedRecipeIngredient?.Quantity ?? 0);
 
-            OnPropertyChanged();
-
+                NewIngredientUnit = _selectedRecipeIngredient != null
+                    ? Units.FirstOrDefault(u => u.Id == _selectedRecipeIngredient.UnitId) ?? Units.FirstOrDefault(u => u.Id == 8)
+                    : Units?.FirstOrDefault(u => u.Id == 8);
+            }
         }
     }
 
@@ -148,54 +117,35 @@ public class DetailedRecipeViewModel : BaseViewModel
     public double? NewIngredientQuantity
     {
         get => _newIngredientQuantity;
-        set
-        {
-            _newIngredientQuantity = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _newIngredientQuantity, value);
     }
 
     private Units _newIngredientUnit;
     public Units NewIngredientUnit
     {
         get => _newIngredientUnit;
-        set
-        {
-            _newIngredientUnit = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _newIngredientUnit, value);
     }
 
     private CookingTimes _selectedCookingTime;
-
     public CookingTimes SelectedCookingTime
     {
         get => _selectedCookingTime;
-        set
-        {
-            _selectedCookingTime = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _selectedCookingTime, value);
     }
 
     private bool _showSuggestions;
     public bool ShowSuggestions
     {
         get => _showSuggestions;
-        set
-        {
-            _showSuggestions = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _showSuggestions, value);
     }
-
     public ICommand ShowRecipeViewCommand { get; }
     public ICommand AddRecipeIngredientCommand { get; }
     public ICommand DeleteRecipeIngredientCommand { get; }
     public ICommand CreateRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }
     public ICommand IsFavoriteCommand { get; }
-
     public DetailedRecipeViewModel(GetStaticListDataService staticDataService,
         IngredientService ingredientService, TagService tagsService, RecipeService recipeService,
         RecipeIngredientService recipeIngredientService, RecipeViewModel recipeViewModel,
@@ -252,7 +202,7 @@ public class DetailedRecipeViewModel : BaseViewModel
         RecipeTags = new ObservableCollection<RecipeTags>(updatedTags);
         OnPropertyChanged(nameof(RecipeTags));
 
-        await _detailedRecipeIngredientViewModel.SortRecipeIngredients();
+        _detailedRecipeIngredientViewModel.SortRecipeIngredients();
 
         _detailedRecipeIngredientViewModel.FilterAvailableIngredients();
     }
@@ -264,13 +214,11 @@ public class DetailedRecipeViewModel : BaseViewModel
         NewIngredientName = "Enter ingredient";
         NewIngredientQuantity = 0;
     }
-
     private void SetDeleteStatus()
     {
         IsDeleteAvailable = Recipe.Id != 0;
         IsSaveAvailable = !IsDeleteAvailable;
     }
-
     private void SetFavoriteStatus()
     {
         IsFavoriteRecipe = Recipe.IsFavorite;
@@ -295,7 +243,6 @@ public class DetailedRecipeViewModel : BaseViewModel
                 }
             }
         }
-
         _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
     }
     private async Task UpdateRecipe()
@@ -321,17 +268,11 @@ public class DetailedRecipeViewModel : BaseViewModel
         {
             Recipe.Id = await _recipeService.AddRecipeAsync(Recipe);
         }
-        else
-        {
-            Recipe.CookingTimeId = SelectedCookingTime.Id;
-            await _recipeService.UpdateRecipeAsync(Recipe);
-        }
 
         await SaveTags();
 
         if (Recipe.Id != 0)
         {
-
             var dbRecipeIngredients = await _recipeIngredientService.GetIngredientsByRecipeIdAsync(Recipe.Id);
             
             foreach (var recipeIngredient in RecipeRecipeIngredients)
@@ -341,42 +282,15 @@ public class DetailedRecipeViewModel : BaseViewModel
             
                 if (dbRecipeIngredient == null)
                 {
-
-                    var existingIngredient = await _ingredientService.GetIngredientByNameAsync(recipeIngredient.Ingredient.Ingredient);
-
-                    if (existingIngredient == null)
-                    {
-                        recipeIngredient.Ingredient.Id = await _ingredientService.AddIngredientAsync(recipeIngredient.Ingredient);
-                    }
-                    else
-                    {
-                        recipeIngredient.Ingredient = existingIngredient;
-                        _ingredientService.AttachIngredient(recipeIngredient.Ingredient);
-                    }
-
-                    await _recipeIngredientService.AddRecipeIngredientAsync(
-                        Recipe.Id,
-                        recipeIngredient.Ingredient.Id,
-                        recipeIngredient.Quantity,
-                        recipeIngredient.Unit.Id);
+                    await _detailedRecipeIngredientViewModel.HandleNewIngredientAsync(recipeIngredient);
                 }
                 else
                 {
-                    if (dbRecipeIngredient.Quantity != recipeIngredient.Quantity ||
-                        dbRecipeIngredient.Unit.Id != recipeIngredient.Unit.Id)
-                    {
-                        await _recipeIngredientService.UpdateRecipeIngredientAsync(
-                            Recipe.Id,
-                            recipeIngredient.Ingredient.Id,
-                            recipeIngredient.Quantity,
-                            recipeIngredient.Unit.Id);
-                    }
+                    await _detailedRecipeIngredientViewModel.UpdateExistingRecipeIngredientAsync(recipeIngredient, dbRecipeIngredient);
                 }
             }
         }
-
         MessageBox.Show("Recipe saved successfully.", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
-
         ShowRecipeView(null);
     }
     private async void DeleteRecipe(object obj)

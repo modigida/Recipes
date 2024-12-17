@@ -13,12 +13,12 @@ public class RecipeViewModel : BaseViewModel
         get => _selectedRecipe;
         set
         {
-            _selectedRecipe = value;
-            OnPropertyChanged();
-
-            if (_selectedRecipe != null)
+            if (SetProperty(ref _selectedRecipe, value))
             {
-                _mainWindowViewModel.OpenDetailedRecipe();
+                if (_selectedRecipe != null)
+                {
+                    _mainWindowViewModel.OpenDetailedRecipe();
+                }
             }
         }
     }
