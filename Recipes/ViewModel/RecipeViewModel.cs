@@ -25,7 +25,6 @@ public class RecipeViewModel : BaseViewModel
 
     public ObservableCollection<Model.Recipes> Recipes { get; set; }
     
-
     public IEnumerable<string> SortOptions { get; } = new List<string> { "Sort by..", "Name", "Favorite", "Cooking Time" };
 
     private string _selectedSortOption = "Sort by..";
@@ -39,7 +38,6 @@ public class RecipeViewModel : BaseViewModel
             SortRecipes();
         }
     }
-
     public RecipeViewModel(RecipeService recipeService, MainWindowViewModel mainWindowViewModel)
     {
         _recipeService = recipeService;
@@ -66,7 +64,6 @@ public class RecipeViewModel : BaseViewModel
         }
         OnPropertyChanged(nameof(Recipes));
     }
-
     private void SortRecipes()
     {
         if (string.IsNullOrEmpty(SelectedSortOption))

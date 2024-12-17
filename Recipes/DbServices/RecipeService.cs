@@ -16,6 +16,7 @@ public class RecipeService
         try
         {
              return await _context.Recipes
+                .AsNoTracking()
                 .Include(r => r.RecipeRecipeTags)
                     .ThenInclude(r => r.RecipeTag)
                 .Include(r => r.CookingTime)

@@ -248,10 +248,10 @@ public class DetailedRecipeViewModel : BaseViewModel
             IsNotFavoriteRecipe = false;
         }
 
-        OnPropertyChanged(nameof(Recipe));
+        OnPropertyChanged(nameof(Recipe.IsFavorite));
         OnPropertyChanged(nameof(IsFavoriteRecipe));
         OnPropertyChanged(nameof(IsNotFavoriteRecipe));
-        UpdateRecipe();
+        await UpdateRecipe();
     }
     private void FilterAvailableIngredients()
     {
@@ -327,7 +327,6 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         if (recipe != null)
         {
-            //Recipe = recipe;
             Recipe = await _recipeService.GetRecipeByIdAsync(recipe.Id);
         }
         else
@@ -526,8 +525,8 @@ public class DetailedRecipeViewModel : BaseViewModel
     {
         if (Recipe.Id != 0)
         {
-            UpdateRecipe();
-            SaveTags();
+            await UpdateRecipe();
+            await SaveTags();
         }
         else
         {
@@ -544,7 +543,7 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         _mainWindowViewModel.ShowRecipeViewCommand.Execute(null);
     }
-    private async void UpdateRecipe()
+    private async Task UpdateRecipe()
     {
         if (_recipe.Id != 0)
         {
@@ -552,7 +551,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             await _recipeService.UpdateRecipeAsync(Recipe);
         }
     }
-    private async void SaveTags()
+    private async Task SaveTags()
     {
         var selectedTagIds = RecipeTags
             .Where(tag => (bool)tag.IsSelected)
@@ -573,7 +572,7 @@ public class DetailedRecipeViewModel : BaseViewModel
             await _recipeService.UpdateRecipeAsync(Recipe);
         }
 
-        SaveTags();
+        await SaveTags();
 
         if (Recipe.Id != 0)
         {
