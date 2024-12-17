@@ -17,10 +17,11 @@ public class DetailedRecipeViewModel : BaseViewModel
     private readonly MainWindowViewModel _mainWindowViewModel;
 
     private DetailedRecipeIngredientViewModel _detailedRecipeIngredientViewModel;
+    private DetailedRecipeLoadDataViewModel _detailedRecipeLoadDataViewModel;
 
     public ObservableCollection<Ingredients> AllIngredients { get; set; }
     public ObservableCollection<Ingredients> FilteredIngredients { get; set; }
-    public ObservableCollection<Units> Units { get; set; }
+    public static ObservableCollection<Units> Units { get; set; }
     public static ObservableCollection<CookingTimes> CookingTimes { get; set; }
     public ObservableCollection<RecipeTags> RecipeTags { get; set; }
 
@@ -209,11 +210,12 @@ public class DetailedRecipeViewModel : BaseViewModel
         _mainWindowViewModel = mainWindowViewModel;
 
         _detailedRecipeIngredientViewModel = new(this, ingredientService, recipeIngredientService);
+        _detailedRecipeLoadDataViewModel = new(this);
 
         AllIngredients = new ObservableCollection<Ingredients>();
         FilteredIngredients = new ObservableCollection<Ingredients>();
 
-        LoadAllIngredients();
+        _detailedRecipeLoadDataViewModel.LoadAllIngredients(ingredientService);
 
         LoadData();
 
@@ -224,25 +226,11 @@ public class DetailedRecipeViewModel : BaseViewModel
         DeleteRecipeCommand = new RelayCommand(DeleteRecipe);
         IsFavoriteCommand = new RelayCommand(IsFavorite);
     }
-    private async void LoadAllIngredients()
-    {
-        var ingredients = await _ingredientService.GetAllIngredientsAsync();
-        AllIngredients = new ObservableCollection<Ingredients>(ingredients);
-    }
     private async void IsFavorite(object obj)
     {
-        if (Recipe.IsFavorite)
-        {
-            Recipe.IsFavorite = false;
-            IsFavoriteRecipe = false;
-            IsNotFavoriteRecipe = true;
-        }
-        else
-        {
-            Recipe.IsFavorite = true;
-            IsFavoriteRecipe = true;
-            IsNotFavoriteRecipe = false;
-        }
+        Recipe.IsFavorite = !Recipe.IsFavorite;
+        IsFavoriteRecipe = Recipe.IsFavorite;
+        IsNotFavoriteRecipe = !Recipe.IsFavorite;
 
         OnPropertyChanged(nameof(Recipe.IsFavorite));
         OnPropertyChanged(nameof(IsFavoriteRecipe));
@@ -251,79 +239,42 @@ public class DetailedRecipeViewModel : BaseViewModel
     }
     public async Task LoadData(Model.Recipes recipe = null)
     {
-        Units = new ObservableCollection<Units>(_staticDataService.GetUnits());
-        CookingTimes = new ObservableCollection<CookingTimes>(_staticDataService.GetCookingTimes());
-        RecipeTags = new ObservableCollection<RecipeTags>(_staticDataService.GetRecipeTags());
+        _detailedRecipeLoadDataViewModel.LoadAllLists(_staticDataService);
 
-        if (recipe != null)
-        {
-            Recipe = await _recipeService.GetRecipeByIdAsync(recipe.Id);
-        }
-        else
-        {
-            Recipe = new Model.Recipes
-            {
-                Recipe = "New Recipe",
-                CookingInstructions = string.Empty,
-                CookingTimeId = CookingTimes.FirstOrDefault(ct => ct.Id == 2)?.Id ?? 0,
-                RecipeIngredients = new ObservableCollection<RecipeIngredients>()
-            };
-        }
+        Recipe = await _detailedRecipeLoadDataViewModel.LoadRecipe(recipe?.Id ?? 0, _recipeService);
 
+        UpdateUI();
+
+        SetDeleteStatus();
+        SetFavoriteStatus();
+
+        var updatedTags = await _detailedRecipeLoadDataViewModel.LoadTags(RecipeTags.ToList(), _tagService, recipe);
+        RecipeTags = new ObservableCollection<RecipeTags>(updatedTags);
+        OnPropertyChanged(nameof(RecipeTags));
+
+        await _detailedRecipeIngredientViewModel.SortRecipeIngredients();
+
+        _detailedRecipeIngredientViewModel.FilterAvailableIngredients();
+    }
+    private void UpdateUI()
+    {
         RecipeRecipeIngredients = new ObservableCollection<RecipeIngredients>(Recipe.RecipeIngredients);
         SelectedCookingTime = CookingTimes.FirstOrDefault(ct => ct.Id == Recipe.CookingTimeId);
         NewIngredientUnit = Units.FirstOrDefault(u => u.Id == 8);
         NewIngredientName = "Enter ingredient";
         NewIngredientQuantity = 0;
-
-        if (Recipe.Id != 0)
-        {
-            IsDeleteAvailable = true;
-            IsSaveAvailable = false;
-        }
-        else
-        {
-            IsDeleteAvailable = false;
-            IsSaveAvailable = true;
-        }
-        if (Recipe.IsFavorite) 
-        {
-            IsFavoriteRecipe = true;
-            IsNotFavoriteRecipe = false;
-        }
-        else
-        {
-            IsFavoriteRecipe = false;
-            IsNotFavoriteRecipe = true;
-        }
-
-        await LoadTags();
-        await _detailedRecipeIngredientViewModel.SortRecipeIngredients();
-
-        _detailedRecipeIngredientViewModel.FilterAvailableIngredients();
     }
-    private async Task LoadTags()
+
+    private void SetDeleteStatus()
     {
-        if (Recipe?.Id > 0)
-        {
-            var tagsForRecipe = await _tagService.GetTagsForRecipeAsync(Recipe.Id);
+        IsDeleteAvailable = Recipe.Id != 0;
+        IsSaveAvailable = !IsDeleteAvailable;
+    }
 
-            foreach (var tag in RecipeTags)
-            {
-                tag.IsSelected = tagsForRecipe.Contains(tag.Id);
-            }
-
-            OnPropertyChanged(nameof(RecipeTags));
-        }
-        else
-        {
-            foreach (var tag in RecipeTags)
-            {
-                tag.IsSelected = false;
-            }
-
-            OnPropertyChanged(nameof(RecipeTags));
-        }
+    private void SetFavoriteStatus()
+    {
+        IsFavoriteRecipe = Recipe.IsFavorite;
+        IsNotFavoriteRecipe = !IsFavoriteRecipe;
     }
     private async void ShowRecipeView(object obj)
     {

@@ -16,8 +16,6 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
         _detailedRecipeViewModel = detailedRecipeViewModel;
         _ingredientService = ingredientService;
         _recipeIngredientService = recipeIngredientService;
-
-        
     }
     public async void AddRecipeIngredient(object obj)
     {
@@ -93,7 +91,7 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
 
         _detailedRecipeViewModel.NewIngredientName = "Enter ingredient";
         _detailedRecipeViewModel.NewIngredientQuantity = 0;
-        _detailedRecipeViewModel.NewIngredientUnit = _detailedRecipeViewModel.Units.FirstOrDefault(u => u.Id == 8);
+        _detailedRecipeViewModel.NewIngredientUnit = DetailedRecipeViewModel.Units.FirstOrDefault(u => u.Id == 8);
     }
 
     public void FilterAvailableIngredients()
