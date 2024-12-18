@@ -273,21 +273,9 @@ public class DetailedRecipeViewModel : BaseViewModel
 
         if (Recipe.Id != 0)
         {
-            var dbRecipeIngredients = await _recipeIngredientService.GetIngredientsByRecipeIdAsync(Recipe.Id);
-            
             foreach (var recipeIngredient in RecipeRecipeIngredients)
             {
-                var dbRecipeIngredient = dbRecipeIngredients
-                    .FirstOrDefault(ri => ri.Ingredient.Id == recipeIngredient.Ingredient.Id);
-            
-                if (dbRecipeIngredient == null)
-                {
-                    await _detailedRecipeIngredientViewModel.HandleNewIngredientAsync(recipeIngredient);
-                }
-                else
-                {
-                    await _detailedRecipeIngredientViewModel.UpdateExistingRecipeIngredientAsync(recipeIngredient, dbRecipeIngredient);
-                }
+                await _detailedRecipeIngredientViewModel.HandleNewIngredientAsync(recipeIngredient);
             }
         }
         MessageBox.Show("Recipe saved successfully.", "Save", MessageBoxButton.OK, MessageBoxImage.Information);

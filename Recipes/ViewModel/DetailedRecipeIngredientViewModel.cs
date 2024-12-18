@@ -24,7 +24,6 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
             MessageBox.Show("Please provide valid values for all fields before adding an ingredient.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-
         var newIngredient = CreateNewRecipeIngredient();
 
         if (IsIngredientAlreadyInRecipe(newIngredient))
@@ -38,7 +37,6 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
 
         FinalizeIngredientAddition();
     }
-
     private bool IsValidNewIngredientInput()
     {
         return !string.IsNullOrWhiteSpace(_detailedRecipeViewModel.NewIngredientName) &&
@@ -46,7 +44,6 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
                _detailedRecipeViewModel.NewIngredientQuantity != null &&
                _detailedRecipeViewModel.NewIngredientUnit != null;
     }
-
     private RecipeIngredients CreateNewRecipeIngredient()
     {
         return new RecipeIngredients
@@ -57,15 +54,11 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
             Unit = _detailedRecipeViewModel.NewIngredientUnit
         };
     }
-
     private bool IsIngredientAlreadyInRecipe(RecipeIngredients newIngredient)
     {
         return _detailedRecipeViewModel.RecipeRecipeIngredients
             .Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient);
     }
-
-   
-
     private async Task AddNewRecipeIngredientAsync(RecipeIngredients newIngredient)
     {
         _detailedRecipeViewModel.RecipeRecipeIngredients.Add(newIngredient);
@@ -93,7 +86,6 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
 
         FilterAvailableIngredients();
     }
-
     private void FinalizeIngredientAddition()
     {
         SortRecipeIngredients();
@@ -102,7 +94,6 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
         _detailedRecipeViewModel.NewIngredientQuantity = 0;
         _detailedRecipeViewModel.NewIngredientUnit = DetailedRecipeViewModel.Units.FirstOrDefault(u => u.Id == 8);
     }
-
     public void FilterAvailableIngredients()
     {
         if (_detailedRecipeViewModel.Recipe == null || _detailedRecipeViewModel.AllIngredients == null) return;
@@ -200,20 +191,6 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
             recipeIngredient.Ingredient.Id,
             recipeIngredient.Quantity,
             recipeIngredient.Unit.Id);
-    }
-    public async Task UpdateExistingRecipeIngredientAsync(
-        RecipeIngredients recipeIngredient,
-        RecipeIngredients dbRecipeIngredient)
-    {
-        if (dbRecipeIngredient.Quantity != recipeIngredient.Quantity ||
-            dbRecipeIngredient.Unit.Id != recipeIngredient.Unit.Id)
-        {
-            await _recipeIngredientService.UpdateRecipeIngredientAsync(
-                _detailedRecipeViewModel.Recipe.Id,
-                recipeIngredient.Ingredient.Id,
-                recipeIngredient.Quantity,
-                recipeIngredient.Unit.Id);
-        }
     }
     private async Task UpdateExistingRecipeIngredientAsync(RecipeIngredients newIngredient)
     {
