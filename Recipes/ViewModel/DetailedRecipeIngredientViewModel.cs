@@ -64,31 +64,7 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
             .Any(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient);
     }
 
-    private async Task UpdateExistingRecipeIngredientAsync(RecipeIngredients newIngredient)
-    {
-        var existingRecipeIngredient = _detailedRecipeViewModel.RecipeRecipeIngredients
-            .First(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient);
-
-        _detailedRecipeViewModel.RecipeRecipeIngredients.Remove(existingRecipeIngredient);
-
-        existingRecipeIngredient.Quantity = newIngredient.Quantity;
-        existingRecipeIngredient.Unit = newIngredient.Unit;
-        existingRecipeIngredient.UnitId = newIngredient.UnitId;
-
-        _detailedRecipeViewModel.RecipeRecipeIngredients.Add(existingRecipeIngredient);
-
-        if (_detailedRecipeViewModel.Recipe.Id != 0)
-        {
-            await _recipeIngredientService.UpdateRecipeIngredientAsync(
-                _detailedRecipeViewModel.Recipe.Id,
-                existingRecipeIngredient.Ingredient.Id,
-                existingRecipeIngredient.Quantity,
-                existingRecipeIngredient.Unit.Id);
-        }
-
-        OnPropertyChanged(nameof(_detailedRecipeViewModel.RecipeRecipeIngredients));
-        FilterAvailableIngredients();
-    }
+   
 
     private async Task AddNewRecipeIngredientAsync(RecipeIngredients newIngredient)
     {
@@ -238,6 +214,31 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
                 recipeIngredient.Quantity,
                 recipeIngredient.Unit.Id);
         }
+    }
+    private async Task UpdateExistingRecipeIngredientAsync(RecipeIngredients newIngredient)
+    {
+        var existingRecipeIngredient = _detailedRecipeViewModel.RecipeRecipeIngredients
+            .First(ri => ri.Ingredient.Ingredient == newIngredient.Ingredient.Ingredient);
+
+        _detailedRecipeViewModel.RecipeRecipeIngredients.Remove(existingRecipeIngredient);
+
+        existingRecipeIngredient.Quantity = newIngredient.Quantity;
+        existingRecipeIngredient.Unit = newIngredient.Unit;
+        existingRecipeIngredient.UnitId = newIngredient.UnitId;
+
+        _detailedRecipeViewModel.RecipeRecipeIngredients.Add(existingRecipeIngredient);
+
+        if (_detailedRecipeViewModel.Recipe.Id != 0)
+        {
+            await _recipeIngredientService.UpdateRecipeIngredientAsync(
+                _detailedRecipeViewModel.Recipe.Id,
+                existingRecipeIngredient.Ingredient.Id,
+                existingRecipeIngredient.Quantity,
+                existingRecipeIngredient.Unit.Id);
+        }
+
+        OnPropertyChanged(nameof(_detailedRecipeViewModel.RecipeRecipeIngredients));
+        FilterAvailableIngredients();
     }
     public async Task DeleteRecipeIngredient(RecipeIngredients recipeIngredient)
     {
