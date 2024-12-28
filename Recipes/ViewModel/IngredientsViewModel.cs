@@ -64,7 +64,7 @@ public class IngredientsViewModel : BaseViewModel
         _ = LoadIngredientsAsync();
         _recipeIngredientService = recipeIngredientService;
     }
-    private async Task LoadIngredientsAsync()
+    public async Task LoadIngredientsAsync()
     {
         Ingredients.Clear();
         var ingredients = await _ingredientService.GetAllIngredientsAsync();

@@ -75,6 +75,7 @@ public class MainWindowViewModel : BaseViewModel
     }
     private void OpenIngredientsView(object obj)
     {
+        IngredientsVM.LoadIngredientsAsync();
         IsRecipeViewVisible = false;
         IsDetailedViewVisible = false;
         IsIngredientViewVisible = true; 
