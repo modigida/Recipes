@@ -132,7 +132,7 @@ public class DetailedRecipeIngredientViewModel : BaseViewModel
             else
             {
                 var bestMatch = _detailedRecipeViewModel.AllIngredients
-                    .Where(i => i.Ingredient.StartsWith(_detailedRecipeViewModel.NewIngredientName, StringComparison.OrdinalIgnoreCase) &&
+                    .Where(i => i.Ingredient.Contains(_detailedRecipeViewModel.NewIngredientName, StringComparison.OrdinalIgnoreCase) &&
                                 !_detailedRecipeViewModel.RecipeRecipeIngredients.Any(ri => ri.Ingredient.Id == i.Id))
                     .OrderBy(i => i.Ingredient)
                     .FirstOrDefault();
