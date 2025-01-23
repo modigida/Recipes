@@ -50,7 +50,9 @@ Open the solution in Visual Studio, build the project, and run the application.
 
 <img src="Recipes/Images/AddIngredientSuggestion.png" alt="Image of suggestions when adding ingredient in recipe" width="200" >
 <img src="Recipes/Images/RecipeIngredientList.png" alt="Image of ingredients in recipe" width="400" >
+
 ## Features
+
 - A user-friendly interface for managing recipes and ingredients.
 - Sorting functionality for recipes to easily find favorites, quickest to prepare, or alphabetical order.
 - Fully integrated with SQL Server to store and retrieve recipe and ingredient data.
